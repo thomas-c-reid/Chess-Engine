@@ -1,0 +1,9 @@
+time_options:
+  - 1min
+  - 2min
+  - 5min
+  - 10min
+starting_options:
+  - player_one_starts
+  - player_two_starts
+  - random

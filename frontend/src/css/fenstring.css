@@ -1,0 +1,22 @@
+.fen-box {
+  width: 100%;                /* Matches its parent width */
+  background-color: #e9ecef;  /* Light grey background */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fen-box:hover {
+  background-color: #d4edda;  /* Subtle green hover effect */
+}
+
+.fen-string {
+  font-family: monospace;
+  font-size: 14px;
+  color: #333;
+  word-break: break-word;
+}

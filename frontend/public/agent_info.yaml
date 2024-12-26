@@ -1,0 +1,11 @@
+agents:
+  RandomAgent:
+    id: 0
+    name: 'RandomAgent'
+    input_type: 'WEBSTREAM'
+    file_location: 'engine.agents.random_agent'
+  UserPlayer:
+    id: 1
+    name: 'Player 1'
+    input_type: 'MANUAL'
+    file_location: None
