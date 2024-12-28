@@ -98,6 +98,7 @@ class ChessEngine:
             
             if self.connected:
                 data = move.to_socket()
+                print('Data', data)
                 self.socketio.emit("new_move", {"move": str(data)})
                 self.socketio.sleep(3)
                 

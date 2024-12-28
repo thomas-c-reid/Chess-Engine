@@ -19,6 +19,7 @@ class MoveDto:
         return {
             'gameId': str(self.game_id), 'player': self.player,
             'moveIdx': self.move_idx, 'time': str(self.time),
+            'player': self.player,
             'move': {
                 'from': index_to_algebraic(self.from_square),
                 'to': index_to_algebraic(self.to_square),

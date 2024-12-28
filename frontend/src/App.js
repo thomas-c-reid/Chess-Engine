@@ -1,17 +1,17 @@
 // App.js
 
 import './App.css';
-import GameSetup from './components/gamesetup.js';
-import Board from './components/board.js';
-import WebSocketHandler from './components/websocketHandler.js';
+import Board from './components/gamePanel/chessboard/board.js';
+import WebSocketHandler from './services/websocketHandler.js';
 import React, { useState, useEffect } from "react";
 import { Chess } from 'chess.js';
-import yaml from 'js-yaml';
-import LeftPanel from './components/leftPanel.js'
-import MainSection from './components/mainSection.js';
+import LeftPanel from './components/settingsPanel/leftPanel.js'
+import MainSection from './components/gamePanel/gamePanel.js';
+import { loadPlayerOptions, loadGameOptions } from './utils/loadData.js';
 
 function App() {
-  const [moves, setMoves] = useState([]);
+  const [whiteMoves, setWhiteMoves] = useState([]);
+  const [blackMoves, setBlackMoves] = useState([]);
   const [game, setGame] = useState(new Chess());
   const [playerOptions, setPlayerOptions] = useState([]);
   const [gameOptions, setGameOptions] = useState([]);
@@ -23,31 +23,15 @@ function App() {
     gameInProgress: false,
   });
 
-  const loadPlayerOptions = async () => {
-    const url = '/agent_info.yaml';
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch YAML file: ${response.statusText}`);
-    }
-    const yamlText = await response.text();
-    const parsedData = yaml.load(yamlText);
-    const agentsArray = Object.values(parsedData.agents || {});
-    setPlayerOptions(agentsArray);
-  };
-
-  const loadGameOptions = async () => {
-    const url = '/game_settings.yaml';
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch YAML file: ${response.statusText}`);
-    }
-    const yamlText = await response.text();
-    const parsedData = yaml.load(yamlText);
-    setGameOptions(parsedData || {});
-  };
-
   const makeAMove = (move) => {
-    const result = game.move(move);
+    const moveString = `${move['move']['from']} -> ${move['move']['to']}`;
+
+    const result = game.move(move['move']);
+    if (move['player'] == 'White') {
+      setWhiteMoves((prevWhiteMoves) => [...prevWhiteMoves, moveString])
+    } else {
+      setBlackMoves((prevBlackMoves) => [...prevBlackMoves, moveString]);
+    }
     if (result) {
       setGame(new Chess(game.fen()));
       setFenstring(game.fen());
@@ -56,12 +40,13 @@ function App() {
       console.log("Invalid move:", move, "Current FEN:", game.fen());
       return null;
     }
-  };
+  }
 
   useEffect(() => {
-    loadPlayerOptions();
-    loadGameOptions();
+    loadPlayerOptions(setPlayerOptions);
+    loadGameOptions(setGameOptions);
   }, []);
+
 
   return (
     <div className="App">
@@ -69,16 +54,21 @@ function App() {
         playerOptions={playerOptions} 
         gameOptions={gameOptions} 
         gameStatus={gameStatus} 
+        connectToWebSocket={connectWebSocketFunc}
+        setGameStatus={setGameStatus}
       />
       <WebSocketHandler
         setGameStatus={setGameStatus}
         makeAMove={makeAMove}
         setConnectWebSocketFunc={(func) => setConnectWebSocketFunc(() => func)}
+        setGame={setGame}
+        setFenstring={setFenstring}
       />
       <MainSection
         game={game}
         makeAMove={makeAMove}
-        moves={moves}
+        whiteMoves={whiteMoves}
+        blackMoves={blackMoves}
         fenstring={fenstring}
         setFenstring={setFenstring}
       />

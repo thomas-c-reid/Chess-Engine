@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js"; // Import chess.js for game logic
-import "../css/board.css";
+import "./board.css";
 
 function Board({game, makeAMove, setFenstring}) {
   // const [game, setGame] = useState(new Chess());

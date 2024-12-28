@@ -1,3 +1,5 @@
 ideas.txt
-/node_modules
+node_modules\
+node_modules
 socket-client.js
+TODO.txt

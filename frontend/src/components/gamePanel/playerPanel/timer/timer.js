@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './timer.css'
 
 const Timer = ({ initialTime }) => {
     const [time, setTime] = useState(initialTime);
@@ -31,11 +32,11 @@ const Timer = ({ initialTime }) => {
     };
 
     return (
-        <div>
+        <div className='timer-container'>
             <div>{formatTime(time)}</div>
-            <button onClick={() => setIsActive(!isActive)}>
+            {/* <button onClick={() => setIsActive(!isActive)}>
                 {isActive ? 'Pause' : 'Start'}
-            </button>
+            </button> */}
         </div>
     );
 };

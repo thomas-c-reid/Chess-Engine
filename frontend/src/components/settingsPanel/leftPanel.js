@@ -1,15 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { FaLinkedin, FaInstagram, FaGithub } from 'react-icons/fa';
-import '../css/leftPanel.css';
+import './leftPanel.css';
+import { postStartGame } from "../../services/apiHandler";
 
-function LeftPanel({ playerOptions, gameOptions, gameStatus }) {
+function LeftPanel({ playerOptions, gameOptions, gameStatus, connectToWebSocket, setGameStatus }) {
   const [selectedTime, setSelectedTime] = useState("5min");
   const [selectedStartOption, setSelectedStartOption] = useState("player_one_starts");
   const [selectedPlayerOne, setSelectedPlayerOne] = useState("");
   const [selectedPlayerTwo, setSelectedPlayerTwo] = useState("");
 
-  // Determine if "Start Match" button should be enabled
   const isStartDisabled = !selectedPlayerOne || !selectedPlayerTwo || !selectedTime || !selectedStartOption;
+
+  const handleStartGame = async () => {
+    const gameTime = selectedTime;
+    const whoStarts = selectedStartOption;
+    const playerOne = document.getElementById("playerOne").value;
+    const playerTwo = document.getElementById("playerTwo").value;
+
+    const payload = {
+      selected_player_names: [playerOne, playerTwo],
+      starts: whoStarts === "Random" ? "RAND" : whoStarts === "PlayerOne" ? "P1" : "P2",
+      game_length: gameTime,
+    };
+
+    try {
+      await postStartGame({ payload, connectToWebSocket, setGameStatus });
+    } catch (err) {
+      console.error("Error starting game:", err);
+    }
+  }
 
   return (
     <div className="left-panel">
@@ -105,7 +124,7 @@ function LeftPanel({ playerOptions, gameOptions, gameStatus }) {
         <button
           className={`start-match-btn ${isStartDisabled ? "disabled" : ""}`}
           disabled={isStartDisabled}
-          onClick={() => console.log("Match Started")}
+          onClick={() => handleStartGame()}
         >
           Start Match
         </button>

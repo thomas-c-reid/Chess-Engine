@@ -1,5 +1,5 @@
 import React from "react";
-import "../css/playerinfo.css";
+import "./playerinfo.css";
 
 function PlayerInfo({ playerName }) {
   return (

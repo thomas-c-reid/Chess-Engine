@@ -7,6 +7,7 @@ function WebSocketHandler({ setGameStatus, makeAMove, setConnectWebSocketFunc })
   const websocketUrl = "http://localhost:5000"
 
   const connectToWebSocket = () => {
+    console.log('YOLO NIGGE')
     if (isConnected || socketRef.current) {
       console.log("Already connected to websocket");
       return;
@@ -24,8 +25,8 @@ function WebSocketHandler({ setGameStatus, makeAMove, setConnectWebSocketFunc })
     socket.on("new_move", (data) => {
       const jsonString = data["move"].replace(/'/g, '"');
       const parsedData = JSON.parse(jsonString);
-      console.log("new_move", parsedData["move"]);
-      makeAMove(parsedData["move"]);
+      // console.log("new_move", parsedData["move"]);
+      makeAMove(parsedData);
     });
 
     socket.on("disconnect", () => {
@@ -45,16 +46,16 @@ function WebSocketHandler({ setGameStatus, makeAMove, setConnectWebSocketFunc })
 
   useEffect(() => {
     if (setConnectWebSocketFunc) {
-      setConnectWebSocketFunc(() => connectToWebSocket());
+      setConnectWebSocketFunc(connectToWebSocket);
     }
-
+  
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
     };
-  }, []); // Empty dependency array ensures this effect runs only once
-
+  }, []);
+  
   return null;
 }
 

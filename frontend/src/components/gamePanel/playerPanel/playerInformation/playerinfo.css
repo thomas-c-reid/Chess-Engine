@@ -1,0 +1,48 @@
+
+.player-info {
+  display: flex;
+  background-color: #ffffff;
+  border: 3px solid rgb(41, 41, 41);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  top: 0;
+  height: 20%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.player-icon {
+  width: 3vw; /* Width relative to the viewport width */
+  height: 3vw; /* Height matches width for a square */
+  background-color: #ccc;
+  border-radius: 50%; /* Makes it a circle */
+  display: flex; /* Centers content */
+  align-items: center; /* Vertically centers content */
+  justify-content: center; /* Horizontally centers content */
+  font-size: 18px;
+  color: #fff;
+  margin: 10px; /* Adds spacing around the icon */
+  box-sizing: border-box; /* Ensures consistent sizing with borders/padding */
+}
+
+
+.player-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 10px;
+}
+
+.player-name {
+  font-size: 1.2vw;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.player-bio {
+  font-size: 0.8vw;
+  color: #666;
+  margin: 0;
+}

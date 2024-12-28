@@ -6,6 +6,6 @@ agents:
     file_location: 'engine.agents.random_agent'
   UserPlayer:
     id: 1
-    name: 'Player 1'
+    name: 'Manual Play'
     input_type: 'MANUAL'
     file_location: None

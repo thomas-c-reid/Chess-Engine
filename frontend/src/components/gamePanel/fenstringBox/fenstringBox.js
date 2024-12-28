@@ -1,5 +1,5 @@
 import React from "react";
-import "../css/fenstring.css";
+import "./fenstring.css";
 
 function FenStringBox({fenstring}) {
   return (

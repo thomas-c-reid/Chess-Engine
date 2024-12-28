@@ -6,8 +6,7 @@
   width: 100%;
   height: auto;
   max-width: 500px; /* Limit the chessboard size so it doesn’t blow up the layout */
-  background-color: #ffffff; 
-  padding: 10px; 
+  border: 3px solid black; 
 }
 
 /* Chessboard Styling */
