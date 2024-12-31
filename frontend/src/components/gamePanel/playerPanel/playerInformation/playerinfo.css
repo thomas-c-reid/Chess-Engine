@@ -1,7 +1,8 @@
-
 .player-info {
   display: flex;
-  background-color: #ffffff;
+  align-items: center; /* Center items vertically */
+  justify-content: start; /* Align items horizontally (adjust as needed) */
+  background-color: #FFFFF2;
   border: 3px solid rgb(41, 41, 41);
   border-bottom: none;
   border-radius: 8px 8px 0 0;
@@ -13,36 +14,38 @@
 }
 
 .player-icon {
-  width: 3vw; /* Width relative to the viewport width */
-  height: 3vw; /* Height matches width for a square */
+  width: 3vw;
+  height: 3vw;
   background-color: #ccc;
+  background-size: cover; /* Ensures the image covers the circle */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Prevents tiling */
   border-radius: 50%; /* Makes it a circle */
-  display: flex; /* Centers content */
-  align-items: center; /* Vertically centers content */
-  justify-content: center; /* Horizontally centers content */
-  font-size: 18px;
-  color: #fff;
-  margin: 10px; /* Adds spacing around the icon */
-  box-sizing: border-box; /* Ensures consistent sizing with borders/padding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  margin-left: 10px;
+  box-sizing: border-box;
 }
 
 
 .player-details {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  margin: 10px;
+  justify-content: center; /* Align details vertically */
+  margin: 0;
 }
 
 .player-name {
-  font-size: 1.2vw;
+  font-size: 1vw;
   font-weight: bold;
   color: #333;
   margin: 0;
 }
 
 .player-bio {
-  font-size: 0.8vw;
+  font-size: 0.7vw;
   color: #666;
   margin: 0;
 }

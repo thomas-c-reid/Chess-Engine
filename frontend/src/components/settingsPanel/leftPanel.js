@@ -3,7 +3,7 @@ import { FaLinkedin, FaInstagram, FaGithub } from 'react-icons/fa';
 import './leftPanel.css';
 import { postStartGame } from "../../services/apiHandler";
 
-function LeftPanel({ playerOptions, gameOptions, gameStatus, connectToWebSocket, setGameStatus }) {
+function LeftPanel({ playerOptions, gameOptions, gameStatus, connectToWebSocket, setGameStatus, loadPlayerData, setPlayerData }) {
   const [selectedTime, setSelectedTime] = useState("5min");
   const [selectedStartOption, setSelectedStartOption] = useState("player_one_starts");
   const [selectedPlayerOne, setSelectedPlayerOne] = useState("");
@@ -16,6 +16,8 @@ function LeftPanel({ playerOptions, gameOptions, gameStatus, connectToWebSocket,
     const whoStarts = selectedStartOption;
     const playerOne = document.getElementById("playerOne").value;
     const playerTwo = document.getElementById("playerTwo").value;
+
+    loadPlayerData(setPlayerData, playerOne, playerTwo);
 
     const payload = {
       selected_player_names: [playerOne, playerTwo],
@@ -131,7 +133,7 @@ function LeftPanel({ playerOptions, gameOptions, gameStatus, connectToWebSocket,
       </div>
 
       {/* Game Status Indicators */}
-      <div className="game-status">
+      {/* <div className="game-status">
         <div className="status-item">
           <div className={`status-circle ${gameStatus.apiConnected ? "green" : "red"}`}></div>
           <span>Connected to API</span>
@@ -144,7 +146,7 @@ function LeftPanel({ playerOptions, gameOptions, gameStatus, connectToWebSocket,
           <div className={`status-circle ${gameStatus.gameInProgress ? "green" : "red"}`}></div>
           <span>Game in Progress</span>
         </div>
-      </div>
+      </div> */}
 
       {/* Social Links */}
         <div className="bottom-links">

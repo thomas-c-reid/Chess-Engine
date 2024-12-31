@@ -1,19 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { Chessboard } from "react-chessboard";
-import { Chess } from "chess.js"; // Import chess.js for game logic
 import "./board.css";
 
-function Board({game, makeAMove, setFenstring}) {
-  // const [game, setGame] = useState(new Chess());
+function Board({game, makeAMove, isInteractive}) {
 
   // Handle piece drop
   function onDrop(sourceSquare, targetSquare) {
+
+    if (!isInteractive) {
+      return false
+    };
     const move = makeAMove({
       from: sourceSquare,
       to: targetSquare,
       promotion: "q", // Auto-promote to queen for simplicity
     });
-    setFenstring(game.fen());
+    // setFenstring(game.fen());
 
     // If the move is illegal
     if (move === null) return false;

@@ -1,7 +1,7 @@
 .fen-box {
   display: flex;
   justify-content: center;
-  height: 20%;
+  height: 30%;
   width: 75%;            
   background-color: #e9ecef;  /* Light grey background */
   border: 1px solid #ddd;

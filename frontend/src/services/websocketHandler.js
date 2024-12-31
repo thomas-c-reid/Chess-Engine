@@ -7,7 +7,6 @@ function WebSocketHandler({ setGameStatus, makeAMove, setConnectWebSocketFunc })
   const websocketUrl = "http://localhost:5000"
 
   const connectToWebSocket = () => {
-    console.log('YOLO NIGGE')
     if (isConnected || socketRef.current) {
       console.log("Already connected to websocket");
       return;
@@ -25,7 +24,8 @@ function WebSocketHandler({ setGameStatus, makeAMove, setConnectWebSocketFunc })
     socket.on("new_move", (data) => {
       const jsonString = data["move"].replace(/'/g, '"');
       const parsedData = JSON.parse(jsonString);
-      // console.log("new_move", parsedData["move"]);
+
+      // TODO: Check if move has 'start' flag so we know to begin a match
       makeAMove(parsedData);
     });
 

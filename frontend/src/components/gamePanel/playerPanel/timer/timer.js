@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './timer.css'
 
-const Timer = ({ initialTime }) => {
+const Timer = ({ initialTime, isActive }) => {
     const [time, setTime] = useState(initialTime);
-    const [isActive, setIsActive] = useState(false);
 
     useEffect(() => {
         let interval = null;
@@ -34,9 +33,6 @@ const Timer = ({ initialTime }) => {
     return (
         <div className='timer-container'>
             <div>{formatTime(time)}</div>
-            {/* <button onClick={() => setIsActive(!isActive)}>
-                {isActive ? 'Pause' : 'Start'}
-            </button> */}
         </div>
     );
 };

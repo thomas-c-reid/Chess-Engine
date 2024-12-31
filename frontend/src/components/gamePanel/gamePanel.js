@@ -3,16 +3,15 @@ import Board from "./chessboard/board";
 import PlayerPanel from "./playerPanel/playerPanel.js";
 import FenstringBox from "./fenstringBox/fenstringBox.js";
 import "./gamePanel.css";
-import PlayerInfo from "./playerPanel/playerInformation/PlayerInfo.js";
 
-function MainSection({whiteMoves, blackMoves, makeAMove, game, fenstring, setFenstring}) {
+function MainSection({whiteMoves, blackMoves, makeAMove, game, fenstring, playerData, takenPieces, activePlayer}) {
 
   return (
     <div className="game-panel">
       <div className="board-section">
-        <PlayerPanel moves={whiteMoves}/>
-        <Board game={game} makeAMove={makeAMove} setFenstring={setFenstring}/>
-        <PlayerPanel moves={blackMoves}/>
+        <PlayerPanel moves={whiteMoves} playerData={playerData} name='White' takenPieces={takenPieces} isActive={activePlayer === 'White'}/>
+        <Board game={game} makeAMove={makeAMove} />
+        <PlayerPanel moves={blackMoves} playerData={playerData} name='Black' takenPieces={takenPieces} isActive={activePlayer === 'Black'}/>
       </div>
 
       <div className="lower-section">

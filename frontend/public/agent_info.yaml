@@ -4,8 +4,12 @@ agents:
     name: 'RandomAgent'
     input_type: 'WEBSTREAM'
     file_location: 'engine.agents.random_agent'
-  UserPlayer:
+    bio: 'Estimated ELO: 50'
+    img_url: '/random.png'
+  ManualPlay:
     id: 1
-    name: 'Manual Play'
+    name: 'ManualPlay'
     input_type: 'MANUAL'
     file_location: None
+    bio: 'so you think you can beat the AI?'
+    img_url: '/random.png'

@@ -16,9 +16,7 @@ export const postStartGame = async ({payload, connectToWebSocket, setGameStatus}
         }
 
         if (connectToWebSocket) {
-            console.log('ATTEMPING TO CONNECT TO WEBSOCKET', connectToWebSocket)
             await connectToWebSocket();
-            console.log('?????')
         } else {
             console.error('No Websocket connection function provided');
         }
