@@ -10,7 +10,13 @@ class GameInformationDto:
     def __str__(self):
         
         return f'##### Game Information #####  \
-            [  ] Game length: {self.game_length} \
-            \n [x] White: {self.white_player.name} \
-                \n [o] Black: {self.black_player.name} \
-                    \n Moves: {self.moves}'
+           \n [INFO] Game length: {self.game_length} \
+            \n [x] White: {self.white_player["name"]} \
+                \n [o] Black: {self.black_player["name"]} \
+                    \n#############################'
+    
+    def to_websocket(self):
+        return {
+            'white': self.white_player.name,
+            'black': self.black_player.name,
+        }
