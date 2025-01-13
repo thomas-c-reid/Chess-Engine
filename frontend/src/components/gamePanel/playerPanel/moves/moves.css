@@ -1,19 +1,20 @@
 .moves-container {
     background-color: #FFFFF2;
     width: 100%;
-    height: 100%;
-    max-height: 100%;
-
+    height: 100%; /* If you want it to fill the parent container */
+    max-height: 340px; /* Set a fixed height limit for the container */
+    
     border: 3px solid rgb(41, 41, 41);
     border-top: none;
     border-bottom: none;
     border-radius: 0 0 0 0;
-    
-    color: white;
+
+    color: rgb(41, 41, 41);
     font-size: 20px;
     font-weight: bold;
     text-align: left;
-    color: rgb(41, 41, 41);
     font-family: 'Roboto', sans-serif;
     box-sizing: border-box; /* Ensures the border is inside the element */
+
+    overflow-y: auto; /* Enables a vertical scroll bar when content overflows */
 }

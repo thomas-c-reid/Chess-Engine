@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 const { io } = require("socket.io-client");
 
-function WebSocketHandler({ setGameStatus, makeAMove, setConnectWebSocketFunc }) {
+function WebSocketHandler({ setGameStatus, makeAMove, setConnectWebSocketFunc, loadPlayerData, setPlayerData }) {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef(null);
   const websocketUrl = "http://localhost:5000"
@@ -20,6 +20,20 @@ function WebSocketHandler({ setGameStatus, makeAMove, setConnectWebSocketFunc })
       console.log('CONNECTED TO WEBSOCKET ON URL:', websocketUrl)
       setIsConnected(true);
     });
+
+    socket.on("new_game", (game_info) => {
+      const playerOne = document.getElementById("playerOne").value;
+      const playerTwo = document.getElementById("playerTwo").value;
+
+      console.log('#######')
+      console.log(game_info)
+      console.log(playerOne)
+      console.log(playerTwo)
+      console.log('#######')
+
+      loadPlayerData(setPlayerData, playerOne, playerTwo, game_info);
+
+    })
 
     socket.on("new_move", (data) => {
       const jsonString = data["move"].replace(/'/g, '"');

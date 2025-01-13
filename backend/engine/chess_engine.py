@@ -1,5 +1,6 @@
 from engine.enums.GameLengthEnum import GameLengthEnum 
 from engine.dtos.GameInformationDto import GameInformationDto
+from logger.logger_config import Logging
 from engine.dtos.MoveDto import MoveDto
 from datetime import datetime
 from random import choice
@@ -9,6 +10,9 @@ import chess
 import yaml
 import time
 import os 
+
+log_config = Logging()
+logger = log_config.get_logger()
 
 class ChessEngine:
     
@@ -55,19 +59,30 @@ class ChessEngine:
             self.black_player = self.players[1 - self.players.index(self.white_player)]
                     
         self.GameInformation = GameInformationDto(self.white_player, self.black_player, game_length)
+        print('*'*50)
+        print(self.GameInformation)
+        print('*'*50)
         
         if verbose:
-            print(self.GameInformation)
-        
+            logger.info(self.GameInformation)
+                
         if connect_web_sockets:
             self.socketio = socket
             self.connected = True
+            self.socketio.sleep(1)  # Allow WebSocket time to stabilize
+            data = self.GameInformation.to_websocket()
+            self.socketio.emit("new_game", data)
+            print('SENDING NEW GAME WEBSOCKET')
+
+            
            
     def start_game(self, verbose=False):
         # TODO: 
         # Need to implement a way to start the game from the front end
         # Need to implement move clock
         # Need to implement websocket receiving moves
+        
+        logger.info('STARTING GAME')
         
         time.sleep(5)
         # need to change this to recieve a message from front end saying  'ready to go' or something
@@ -84,7 +99,7 @@ class ChessEngine:
                 if self.white_player['input_type'] == 'AUTO':
                     move_action: chess.Move = self.white_player['class'].make_move(self.board)
                 elif self.white_player['input_type'] == 'WEBSOCKET':
-                    print('Need to implement async websocket move')
+                    logger.info('Need to implement async websocket move')
                     
                 move = MoveDto(game_id=gameId, move=move_action.uci(), 
                             player='White', move_idx=move_idx, 
@@ -96,7 +111,7 @@ class ChessEngine:
                 if self.black_player['input_type'] == 'AUTO':
                     move_action: chess.Move = self.black_player['class'].make_move(self.board)
                 elif self.black_player['input_type'] == 'WEBSOCKET':
-                    print('Need to implement async websocket move')
+                    logger.info('Need to implement async websocket move')
                 move = MoveDto(game_id=gameId, move=move_action.uci(), 
                                player='Black', move_idx=move_idx, 
                                time=datetime.now(), from_square=move_action.from_square,
@@ -113,19 +128,19 @@ class ChessEngine:
             # Check terminal state
             if self.board.is_checkmate():
                 winner = "Black" if self.board.turn else "White"
-                print("Game over! Winner: ", winner)
+                logger.info("Game over! Winner: ", winner)
                 game_over = True
             elif self.board.is_stalemate():
-                print("Game over! It's a stalemate.")
+                logger.info("Game over! It's a stalemate.")
                 game_over = True
             elif self.board.is_insufficient_material():
-                print("Game over! Draw due to insufficient material.")
+                logger.info("Game over! Draw due to insufficient material.")
                 game_over = True
             elif self.board.is_seventyfive_moves():
-                print("Game over! Draw due to seventy-five-move rule.")
+                logger.info("Game over! Draw due to seventy-five-move rule.")
                 game_over = True
             elif self.board.is_fivefold_repetition():
-                print("Game over! Draw due to fivefold repetition.")
+                logger.info("Game over! Draw due to fivefold repetition.")
                 game_over = True
             else:
                 # Game continues
@@ -133,12 +148,12 @@ class ChessEngine:
                 move_idx += 1
             
             if verbose:
-                print('*'*50)
-                print('Move taken: ', move)
-                print('turn: ', turn)
-                print(self.board)
-                print('Fen: ', self.board.fen())
-                print('*'*50)
+                logger.info('*'*50)
+                logger.info('Move taken: ', move)
+                logger.info('turn: ', turn)
+                logger.info(self.board)
+                logger.info('Fen: ', self.board.fen())
+                logger.info('*'*50)
         
     @staticmethod
     def change_turn(turn):

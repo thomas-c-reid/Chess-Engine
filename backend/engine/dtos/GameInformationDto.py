@@ -17,6 +17,6 @@ class GameInformationDto:
     
     def to_websocket(self):
         return {
-            'white': self.white_player.name,
-            'black': self.black_player.name,
+            'white': self.white_player['name'],
+            'black': self.black_player['name'],
         }

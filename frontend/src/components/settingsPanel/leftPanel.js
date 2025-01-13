@@ -3,7 +3,7 @@ import { FaLinkedin, FaInstagram, FaGithub } from 'react-icons/fa';
 import './leftPanel.css';
 import { postStartGame } from "../../services/apiHandler";
 
-function LeftPanel({ playerOptions, gameOptions, gameStatus, connectToWebSocket, setGameStatus, loadPlayerData, setPlayerData }) {
+function LeftPanel({ playerOptions, gameOptions, gameStatus, connectToWebSocket, setGameStatus }) {
   const [selectedTime, setSelectedTime] = useState("5min");
   const [selectedStartOption, setSelectedStartOption] = useState("player_one_starts");
   const [selectedPlayerOne, setSelectedPlayerOne] = useState("");
@@ -14,10 +14,9 @@ function LeftPanel({ playerOptions, gameOptions, gameStatus, connectToWebSocket,
   const handleStartGame = async () => {
     const gameTime = selectedTime;
     const whoStarts = selectedStartOption;
+
     const playerOne = document.getElementById("playerOne").value;
     const playerTwo = document.getElementById("playerTwo").value;
-
-    loadPlayerData(setPlayerData, playerOne, playerTwo);
 
     const payload = {
       selected_player_names: [playerOne, playerTwo],

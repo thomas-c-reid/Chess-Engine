@@ -44,7 +44,7 @@ class SearchTree:
         return f"SearchTree with {len(self.nodes)} nodes"
     
 
-class SimpleTreeSearch:
+class AlphaBetaTreeSearch:
     """
     
     """
@@ -58,16 +58,16 @@ class SimpleTreeSearch:
         self.verbose = verbose
             
     def search(self, board: chess.Board):
+        
         self.search_tree = SearchTree(board)
         self.nodes_visited = 0
         node = Node(board, 0)
-        optimal_move, optimal_value = self._search(node, 0)
+        optimal_move, optimal_value = self._search(node, 0, alpha=float('-inf'), beta=float('inf'))
         
         if self.verbose:
             print('#################### Starting search ####################')
             print(f"Search completed. Search tree size: {len(self.search_tree.nodes)} nodes")#
             print(f"Nodes visited: {self.nodes_visited}")
-            print('Duplicates: ', self.search_tree.find_dupes())
             print('#################### Finished search ####################')
         return optimal_move, optimal_value
 
@@ -96,7 +96,7 @@ class SimpleTreeSearch:
         
         return
         
-    def _search(self, node, depth):
+    def _search(self, node, depth, alpha, beta):
         self.nodes_visited += 1
         if depth == self.max_depth:
             node.value = self.evaluation.evaluate_position(node.board)
@@ -114,18 +114,27 @@ class SimpleTreeSearch:
         if node.board.turn == 1:  # Maximizing player
             max_value = float('-inf')
             for child in node.children:
-                move, value = self._search(child, depth + 1)
+                move, value = self._search(child, depth + 1, alpha, beta)
                 if value > max_value:
                     max_value = value
-                    best_move = child.board.move_stack[-1]                  
+                    best_move = child.board.move_stack[-1]  # The move that led to this board
+                    
+                alpha = max(alpha, max_value)
+                if alpha <= beta:
+                    break
+                    
                 
             return best_move, max_value
         else:  # Minimizing player
             min_value = float('inf')
             for child in node.children:
-                move, value = self._search(child, depth + 1)
+                move, value = self._search(child, depth + 1, alpha, beta)
                 if value < min_value:
                     min_value = value
-                    best_move = child.board.move_stack[-1]
+                    best_move = child.board.move_stack[-1]  # The move that led to this board
+                    
+                beta = min(beta, min_value)
+                if beta <= alpha:
+                    break
                     
             return best_move, min_value

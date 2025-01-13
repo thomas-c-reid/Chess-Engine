@@ -3,4 +3,5 @@
     flex-direction: column;
     width: 20%;
     height: 100%;
+    max-height: 100%;
 }

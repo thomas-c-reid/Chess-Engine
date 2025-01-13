@@ -1,0 +1,34 @@
+version: 1
+
+formatters:
+  standard:
+    format: '%(message)s'
+    style: '%'
+
+  base:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    style: '%'
+
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: standard
+    level: INFO
+
+  gameplay_config:
+    class: logging.FileHandler
+    formatter: standard
+    level: INFO
+    filename: logger/logs/gameplay.log
+    mode: 'a'
+
+root:
+  level: INFO
+  handlers: [console]
+
+loggers:
+  gameplay: 
+    level: INFO
+    handlers: [gameplay_config, console]
+    propagate: no

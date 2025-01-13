@@ -6,6 +6,10 @@ import "./gamePanel.css";
 
 function MainSection({whiteMoves, blackMoves, makeAMove, game, fenstring, playerData, takenPieces, activePlayer}) {
 
+  console.log('WOWOWOWOWOWOWO')
+  console.log(playerData)
+  console.log('WOWOWOWOWOWOWO')
+
   return (
     <div className="game-panel">
       <div className="board-section">

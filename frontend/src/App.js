@@ -52,8 +52,6 @@ function App() {
       } else {
         setIsBoardInteractive(false);
       }
-      // should also be looking to check what input type the current player is, if manual, then we should be waiting for a move, 
-      // if websocket, we should wait for new move to come in 
 
       // update game
       setGame(new Chess(game.fen()));
@@ -79,15 +77,14 @@ function App() {
         gameStatus={gameStatus} 
         connectToWebSocket={connectWebSocketFunc}
         setGameStatus={setGameStatus}
-        loadPlayerData={loadPlayerData}
-        setPlayerData={setPlayerData}
+        
       />
       <WebSocketHandler
         setGameStatus={setGameStatus}
         makeAMove={makeAMove}
         setConnectWebSocketFunc={(func) => setConnectWebSocketFunc(() => func)}
-        setGame={setGame}
-        setFenstring={setFenstring}
+        loadPlayerData={loadPlayerData}
+        setPlayerData={setPlayerData}
       />
       <MainSection
         game={game}

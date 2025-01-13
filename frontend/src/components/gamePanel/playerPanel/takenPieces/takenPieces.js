@@ -38,11 +38,11 @@ import './takenPieces.css';
 
 function TakenPieces({ takenPieces }) {
   const pieceImages = {
-    p: '/pawn.png',
-    k: '/knight.png',
-    b: '/bishop.png',
-    r: '/rook.png',
-    q: '/queen.png',
+    p: 'pieces/pawn.png',
+    k: 'pieces/knight.png',
+    b: 'pieces/bishop.png',
+    r: 'pieces/rook.png',
+    q: 'pieces/queen.png',
   };
 
   return (
