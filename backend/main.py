@@ -32,13 +32,12 @@ if __name__ == '__main__':
         socketio.run(app, debug=False, host="localhost", port=5000)
     else:
         params = {
-            'selected_player_names': ['SimpleAgent', 'RandomAgent'],
+            'selected_player_names': ['OpeningBookAgent', 'RandomAgent'],
             'starts': 'P1',
             'game_length': '5min',
             'connect_web_sockets': False,
             'socket': None,
             'verbose': True
-            
         }
         chess_engine.setup_game_environment(**params)
         chess_engine.start_game(verbose=True)

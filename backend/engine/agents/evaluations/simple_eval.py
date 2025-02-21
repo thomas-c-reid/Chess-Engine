@@ -54,15 +54,15 @@ class SimpleEvaluation:
                 0,  10,   0,  10,  10,   0,  10,   0,
                 0,  10,   0,  10,  10,   0,  10,   0,
                 0,   0, -10,   0,   0, -10,   0,   0],
-            chess.KNIGHT: [
-                -5,  -5, -5, -5, -5, -5,  -5, -5,
+            chess.KNIGHT: [ value * 0.1 for value in 
+               [-5,  -5, -5, -5, -5, -5,  -5, -5,
                 -5,   0,  0, 10, 10,  0,   0, -5,
                 -5,   5, 10, 10, 10, 10,   5, -5,
                 -5,   5, 10, 15, 15, 10,   5, -5,
                 -5,   5, 10, 15, 15, 10,   5, -5,
                 -5,   5, 10, 10, 10, 10,   5, -5,
                 -5,   0,  0,  5,  5,  0,   0, -5,
-                -5, -10, -5, -5, -5, -5, -10, -5],
+                -5, -10, -5, -5, -5, -5, -10, -5]],
             chess.PAWN: [
                 0,   0,   0,   0,   0,   0,   0,   0,
                 30,  30,  30,  40,  40,  30,  30,  30,
@@ -85,17 +85,21 @@ class SimpleEvaluation:
         - float: A score for the current board state (positive for White, negative for Black).
         """
         score = 0
+        
 
         # Material Evaluation
-        score += self.material_evaluation(board)
+        material_score = self.material_evaluation(board)
 
-        score += self.evaluate_pawn_structure(board)
+        # score += self.evaluate_pawn_structure(board)
 
         # Scores high if lotsW of moves present in future - I dont really like this
         # score += 0.1 * (len(list(board.legal_moves)) * (1 if board.turn == chess.WHITE else -1))
 
-        score += self.evaluate_piece_square_tables(board)
-
+        piece_square_score = self.evaluate_piece_square_tables(board)
+        piece_square_score = 0
+        score = piece_square_score + material_score
+        # print(f'score {score} piece_score {piece_square_score} mat_score {material_score}')
+        
         return score
 
     def evaluate_pawn_structure(self, board: chess.Board) -> float:

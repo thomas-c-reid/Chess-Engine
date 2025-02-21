@@ -14,6 +14,8 @@ class MoveDto:
     promotion: str
     move: str
     time: str
+    fen_before_push: str
+    taken_pieces: list
     
     def to_socket(self):
         return {
@@ -24,7 +26,9 @@ class MoveDto:
                 'from': index_to_algebraic(self.from_square),
                 'to': index_to_algebraic(self.to_square),
                 'promotion': 'q',
-            }
+            },
+            'fen_before_push': self.fen_before_push,
+            'taken_pieces': self.taken_pieces
             };
     
     def __str__(self):

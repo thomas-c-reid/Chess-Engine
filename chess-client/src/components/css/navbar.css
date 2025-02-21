@@ -1,0 +1,34 @@
+.navbar {
+    background-color: #0c1d2e;
+
+    padding: 10px 10px 0px 10px;
+
+    display: grid;
+    grid-template-rows: 50px 1fr 50px;
+}
+
+.footer{
+    /* background-color: #bcc7d1; */
+}
+
+.menu{
+    /* background-color: chartreuse; */
+}
+
+.menu-switcher{
+    padding: 1px;
+}
+
+.dropdown-menu{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    background-color: #0c1d2e;
+    color: aliceblue;
+    font-weight: 600;
+    font-size: 35px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: none;
+}

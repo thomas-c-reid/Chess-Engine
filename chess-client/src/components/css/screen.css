@@ -1,0 +1,133 @@
+.screen{
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+
+    margin: 20px;
+}
+
+.player-info{
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+/* PLAYER CARD SECTION */
+.player-card.right {
+    justify-content: flex-end;
+}
+
+.player-card.right .player-card-icon {
+    margin-left: 0;    /* Reset */
+    margin-right: -30px; /* Moves right */
+}
+.player-card.right .player-card-info-area {
+    text-align: right;
+}
+
+.player-card.left {
+    justify-content: flex-start;
+}
+
+.player-card.left .player-card-icon {
+    margin-right: 0;    /* Reset */
+    margin-left: -30px; /* Moves right */
+}
+.player-card.left .player-card-info-area {
+    text-align: left;
+}
+
+.player-card.active{
+    /* From https://css.glass */
+    opacity: 1;
+    /* background: rgba(255, 255, 255, 0.45); */
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    /* backdrop-filter: blur(5px); */
+    /* -webkit-backdrop-filter: blur(5px); */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.player-card.inactive{
+    opacity: 0.5;
+}
+
+
+.player-timer-top-row{
+    display: flex;
+    flex-direction: row;
+}
+
+
+/* game section */
+.game-container{
+    display: flex;
+    flex-direction: row;
+
+    justify-content: center;
+    /* margin-top: 20px */
+}
+
+.game-information-container{
+    margin-right: 20px;
+}
+
+/* game-buttons icon */
+.game-control-button-container{
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+}
+
+.game-control-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 35px;
+    width: 35px;
+
+    border-radius: 50%;
+
+    border: none;
+}
+
+.game-control-button.pause{
+    background-color: rgb(102, 160, 226);
+}
+.game-control-button.kill{
+    background-color: crimson;
+}
+.game-control-button.restart{
+    background-color: rgb(25, 230, 69);
+}
+.game-control-button.fen{
+    background-color: rgb(192, 230, 25);
+}
+.game-control-button.rating{
+    background-color: rgb(247, 247, 247);
+    color: black;
+    font-weight: bold;
+}
+
+.pause .fa-pause {
+    color: rgb(14, 58, 109);
+}
+.kill .fa-skull {
+    color: rgb(71, 4, 4);
+}
+.restart .fa-rotate-right {
+    color: rgb(27, 107, 45);
+}
+.fen .fa-copy {
+    color: rgb(53, 82, 0);
+}
+
+
+
+.board-contanier{
+    margin-top: 10px;
+}

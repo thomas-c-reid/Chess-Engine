@@ -1,0 +1,13 @@
+.close-panel{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    /* overflow: hidden; */
+	border: none;
+	width: 2em; height: 2em;
+	border-radius: 50%;
+	color: #1da1f2;
+	cursor: pointer;
+
+    /* background-color: brown; */
+}

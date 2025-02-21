@@ -1,0 +1,60 @@
+/* player card styling */
+.player-card{
+    display: flex;
+
+    height: 120px;
+    width: 30%;
+
+    background-color: rgb(252, 249, 249);
+    color: black;
+
+    border-radius: 10px;
+}
+
+.player-card-icon-area{
+    display: flex;
+    height: 100%;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.player-card-icon{
+    background-color: crimson;
+
+    height: 90px;
+    width: 90px;
+
+    border-radius: 10%;
+}
+
+/* text */
+.player-card-info-area{
+    margin: 15px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;    
+}
+
+.player-card-info-nametag{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.player-card-info-button{
+    height: 20px;
+    width: 90px;
+    margin-top: 15px;
+    margin-left: 15px;
+
+    background-color: crimson;
+    border: none;
+    border-radius: 15px;
+
+    color: white;
+    text-align: center;
+
+    box-shadow: 0px 4px 0px rgb(163, 0, 0);
+}

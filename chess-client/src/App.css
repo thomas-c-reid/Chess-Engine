@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel&family=Fauna+One&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+.App {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  text-align: center;
+
+  background-color: rgb(17, 17, 17);
+  height: 100vh;
+
+  font-family: "Roboto", serif;
+  color: white
+}
+
+/* when panel is minimized */
+.App.minimised{
+  grid-template-columns: 50px 1fr;
+  transition: all 0.2s ease;
+}
+
+.App.minimised .navbar .menu{
+  display: none;  
+}
+
+.App.minimised .navbar .footer{
+  display: none;  
+}
+
+.App.minimised .navbar .menu-switcher{
+  display: none;  
+}

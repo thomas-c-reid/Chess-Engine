@@ -13,6 +13,11 @@ def start_match():
     
     request_body = request.get_json()
     
+    print('+'*50)
+    print('Request Body:')
+    print(request_body)
+    print('+'*50)
+    
     # Access the shared instances
     socketio = api_routes.socketio
     chess_engine = api_routes.chess_engine
@@ -22,11 +27,14 @@ def start_match():
     
     request_body['connect_web_sockets'] = True
     request_body['socket'] = socketio
+    # request_body['starting_fen'] = 'rnb2b1r/ppkpP2p/5ppn/q1pQ4/8/2P1P3/PP3PPP/RNB1KBNR w KQ - 1 8'
+    print(request_body)
 
     def run_game():
         print("Game started in background thread...")
+        print(request_body)
         chess_engine.setup_game_environment(**request_body)
-        chess_engine.start_game()
+        chess_engine.start_game(verbose=True)
 
     # Start the game in a background thread
     game_thread = threading.Thread(target=run_game)

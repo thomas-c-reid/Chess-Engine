@@ -1,11 +1,12 @@
 class GameInformationDto:
     
-    def __init__(self, white_player, black_player, game_length):
+    def __init__(self, white_player, black_player, game_length, board):
         self.white_player = white_player
         self.black_player = black_player
         self.game_length = game_length
         self.moves = []
         self.result = None
+        self.board = board
     
     def __str__(self):
         
@@ -19,4 +20,6 @@ class GameInformationDto:
         return {
             'white': self.white_player['name'],
             'black': self.black_player['name'],
+            'game_length': self.game_length,
+            'starting_fen': self.board.fen()
         }

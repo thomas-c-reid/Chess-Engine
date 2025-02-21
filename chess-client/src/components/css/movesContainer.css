@@ -1,0 +1,77 @@
+/* Moves container */
+.moves-container {
+    height: 450px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(103, 126, 151);
+    border-radius: 10px;
+    box-shadow: 0px 4px 0px rgb(73, 73, 73);
+    margin: 10px;
+    overflow: hidden;
+}
+
+/* Moves scroll area */
+.moves-scroll {
+    overflow-y: auto;
+    max-height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2);
+    
+}
+
+/* Custom scrollbar (for WebKit browsers) */
+.moves-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.moves-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+ol{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+/* Move item styling */
+.moves-list-item {
+    display: flex;
+    justify-content: space-between;  /* Ensures move is on left, time is on right */
+    align-items: center;
+    border-bottom: 1px solid #ddd; /* Optional: Adds separation */
+    margin-right: 0px;
+    margin-left: 0;
+    padding-left: 0;
+    width: 100%;
+}
+
+/* Move text styles */
+.moves-text {
+    text-align: left;
+}
+
+/* Move time styles */
+.moves-time {
+    font-size: 0.9em;
+    font-weight: 300;
+    text-align: right;
+}
+
+/* Taken pieces */
+.moves-taken-pieces {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    background-color: aliceblue;
+    height: 40px;
+    padding-left: 15px;
+}
+
+.moves-taken-piece-img {
+    height: 20px;
+    width: 20px;
+    margin-top: 5px;
+}
