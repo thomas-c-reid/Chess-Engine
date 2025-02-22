@@ -11,24 +11,25 @@ import chess
 import yaml
 import time
 import os 
-
+from services.message_handler import MessageHandler
 log_config = Logging()
 logger = log_config.get_logger()
 
 class ChessEngine:
     
-    def __init__(self):
+    def __init__(self, message_handler: MessageHandler = None):
         self.board = chess.Board()
+        self.message_handler = message_handler
         
         backend_dir = os.path.dirname(os.path.realpath(__file__))  # Path to the current file's directory
-        # Move up two directories to the project root
         project_root = os.path.abspath(os.path.join(backend_dir, '../../'))
-        yaml_file_path = os.path.join(project_root, 'frontend/public/agent_info.yaml')
+        yaml_file_path = os.path.join(project_root, 'chess-client/public/agent_info.yaml')
         
         with open(yaml_file_path, 'r') as file:
             agent_config = yaml.safe_load(file)
             self.agents = agent_config.get('agents')   
         self.connected = False
+        self.loop = asyncio.get_event_loop()
                          
     def setup_game_environment(self, selected_player_names: list = [], starts: str = 'RAND', game_length: str ='5min', 
                                connect_web_sockets: bool = False, socket=None, verbose=False, starting_fen=None):
@@ -37,6 +38,8 @@ class ChessEngine:
         - starts: (str) a choice from: RAND, P1, P2 - decides who starts as White
         - GameLength: (Enum) 
         """        
+        self.manual_move = None
+                           
         # select players
         self.players = []
         for selected_agent in selected_player_names:
@@ -52,7 +55,9 @@ class ChessEngine:
                     self.players.append(player_dict)
                     
         for i in range(2 - len(self.players)):
-            self.players.append({'name': 'RandomAgent', 'input_type': 'AUTO', 'class': 'engine.agents.random_agent'})
+            module = importlib.import_module('engine.agents.random_agent')
+            agent_class = getattr(module, 'RandomAgent')
+            self.players.append({'name': 'RandomAgent', 'input_type': 'AUTO', 'class': agent_class()})
                                 
                                 
         # Select colour
@@ -89,37 +94,44 @@ class ChessEngine:
             data = self.GameInformation.to_websocket()
             self.socketio.emit("new_game", data)
             print('SENDING NEW GAME WEBSOCKET')
+            # self.socketio.start_background_task(self.start_game)
+            
 
+    # async def wait_for_manual_move(self):
+    #     self.manual_event = asyncio.Event()  # Create the event each time
+    #     self.socketio.emit('request_move', None)
+
+    #     print("Waiting for manual move...")
+    #     print('Manual event 1', self.manual_event)
+    #     print("Event loop is running:", asyncio.get_event_loop().is_running())
+        
+    #     # Debug log before waiting to confirm it's actually being awaited
+    #     print("Before awaiting the event...")
+    #     await self.manual_event.wait()
+    #     print("After awaiting the event...")  # Should not be printed until the event is set
+
+    #     print("Manual move received:", self.manual_move)
+    #     self.manual_event.clear()
+    #     return self.manual_move
+    
+    
     async def wait_for_manual_move(self):
-        """
-        Wait for a move to be received via WebSocket.
-        """
-        move = None
-        event = asyncio.Event()
-
-        # Define a callback to handle the received move
-        def on_move_received(data):
-            nonlocal move
-            move = data['move']  # Assuming the move is sent as a 'move' field in the WebSocket message
-            event.set()  # Notify that a move has been received
-
-        # Register the WebSocket event listener
-        self.socketio.on('new_move', on_move_received)
-
-        # Wait until the move is received
-        await event.wait()
-
-        # Remove the listener to avoid potential conflicts
-        self.socketio.off('new_move', on_move_received)
-
+        
+        if not self.message_handler:
+            raise RuntimeError("MessageHandler not set")
+        
+        print('waiting on manual move')
+        move = await self.loop.run_in_executor(None, lambda: self.message_handler.get_move(timeout=30))
+        if not move:
+            raise RuntimeError("No move received")
         return move
 
            
-    def start_game(self, verbose=False):
+    async def start_game(self, verbose=False):
         # TODO:
         logger.info('STARTING GAME')
         
-        time.sleep(5)
+        await asyncio.sleep(5)
         # need to change this to recieve a message from front end saying  'ready to go' or something
                 
         gameId = uuid4()
@@ -137,6 +149,10 @@ class ChessEngine:
                     move_action: chess.Move = self.white_player['class'].make_move(self.board)
                 elif self.white_player['input_type'] == 'MANUAL':
                     # need a function to wait for a move to come in through websockets
+                    x = await self.wait_for_manual_move()
+                    print('H'*500)
+                    print(x)
+                    print('H'*500)
                     logger.info('Need to implement async websocket move')
                     
                 print(move_action)
@@ -156,6 +172,10 @@ class ChessEngine:
                     move_action: chess.Move = self.black_player['class'].make_move(self.board)
                 elif self.black_player['input_type'] == 'MANUAL':
                     logger.info('Need to implement async websocket move')
+                    x = await self.wait_for_manual_move()
+                    print('H'*500)
+                    print(x)
+                    print('H'*500)
                     
                 self.update_captured_pieces(move_action, 'black')
                     

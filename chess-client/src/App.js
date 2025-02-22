@@ -7,6 +7,8 @@ import React, {useState} from 'react';
 
 function App() {
 
+  const [socket, setSocket] = useState(null);
+
   const [connectionState, setConnectionState] = useState('INIT');
   const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -37,11 +39,13 @@ function App() {
   const [latest_move, setLatestMove] = useState(null);
   const [starting_fen, setStartingFen] = useState(null);
 
+  const [isBoardEnabled, setIsBoardEnabled] = useState(false);
+
   return (
     <div className={`App ${isFullScreen ? "minimised" : ""}`}>
-        <WebSocketHandler connectionState={connectionState} setPlayers={setPlayers} setMoves={setMoves} setPieces={setPieces} setTime={setTime} setTimerState={setTimerState} setPlayerTurn={setPlayerTurn} setLatestMove={setLatestMove} setStartingFen={setStartingFen}/>
+        <WebSocketHandler setSocket={setSocket} connectionState={connectionState} setPlayers={setPlayers} setMoves={setMoves} setPieces={setPieces} setTime={setTime} setTimerState={setTimerState} setPlayerTurn={setPlayerTurn} setLatestMove={setLatestMove} setStartingFen={setStartingFen} setIsBoardEnabled={setIsBoardEnabled}/>
         <Navbar setConnectionState={setConnectionState} setIsFullScreen={setIsFullScreen}/>
-        <Screen players={players} moves={moves} pieces={pieces} time={time} timerState={timerState} setTimerState={setTimerState} playerTurn={playerTurn} latest_move={latest_move} starting_fen={starting_fen}/>
+        <Screen players={players} moves={moves} pieces={pieces} time={time} timerState={timerState} setTimerState={setTimerState} playerTurn={playerTurn} latest_move={latest_move} setLatestMove={setLatestMove} starting_fen={starting_fen} isBoardEnabled={isBoardEnabled} setIsBoardEnabled={setIsBoardEnabled} socket={socket}/>
     </div>
   );
 }

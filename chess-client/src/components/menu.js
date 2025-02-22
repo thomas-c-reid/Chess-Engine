@@ -1,7 +1,8 @@
 import React from 'react';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import "./css/menu.css"
 import yaml from 'js-yaml';
+import { io } from "socket.io-client";
 import {postStartGame} from '../services/apiHandler';
 
 
@@ -15,6 +16,7 @@ const Menu = ({setConnectionState}) => {
     const [isStartDisabled, setIsStartDisabled] = useState(true);
     const [gameOptions, setGameOptions] = useState({});
     const [playerOptions, setPlayerOptions] = useState([]);
+    const socketRef = useRef(null);
 
     const loadGameData = async (setGameOptions, setPlayerOptions) => {
         // 1. Load agent options
@@ -41,18 +43,33 @@ const Menu = ({setConnectionState}) => {
 
     const handleStartGame = async () => {
 
-        const payload = {
+        if (!socketRef.current) {
+            socketRef.current = io("http://localhost:5000")
+        }
+
+        socketRef.current.emit("new_game", {
             selected_player_names: [selectedPlayerOne, selectedPlayerTwo],
             starts: selectedStartOption,
             game_length: selectedTimeOption,
             starting_fen: selectedFenString
-        };
+        })
 
-        try{
-            await postStartGame(payload, setConnectionState)
-        } catch (err) {
-            console.log(err)
-        }
+        console.log('JUST EMIT WEBSOCKET START_GAME CONNECT')
+
+        setConnectionState('READY')
+
+        // const payload = {
+        //     selected_player_names: [selectedPlayerOne, selectedPlayerTwo],
+        //     starts: selectedStartOption,
+        //     game_length: selectedTimeOption,
+        //     starting_fen: selectedFenString
+        // };
+
+        // try{
+        //     await postStartGame(payload, setConnectionState)
+        // } catch (err) {
+        //     console.log(err)
+        // }
     }
 
     useEffect(() => {

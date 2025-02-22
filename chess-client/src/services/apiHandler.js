@@ -7,14 +7,10 @@ export const postStartGame = async (payload, setConnectionState) => {
         });
         console.log('response', response)
 
-        // if connection contains some flag we connect to websocket
         if (1 === 1){
             setConnectionState('READY')
             return true
         }
-
-
-
     } catch (err){
         console.log('error posting data')
         console.log(err)

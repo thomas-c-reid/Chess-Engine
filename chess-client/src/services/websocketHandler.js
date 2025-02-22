@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import { Chess } from "chess.js";
 import {loadPlayerInformation} from '../utils/loadGameInformation'
 
-function WebSocketHandler({connectionState, setPlayers, setMoves, setPieces, setTime, setTimerState, setPlayerTurn, setLatestMove, setStartingFen}) {
+function WebSocketHandler({setSocket, connectionState, setPlayers, setMoves, setPieces, setTime, setTimerState, setPlayerTurn, setLatestMove, setStartingFen, setIsBoardEnabled}) {
   const [isConnected, setIsConnected] = useState(false)
   const socketRef = useRef(null);
   const websocketUrl = "http://localhost:5000";
@@ -16,6 +16,7 @@ function WebSocketHandler({connectionState, setPlayers, setMoves, setPieces, set
 
     const socket = io(websocketUrl)
     socketRef.current = socket
+    setSocket(socketRef.current)
 
     socket.on("connect", () => {
         console.log('CONNECTED TO WEBSOCKET ON URL:', websocketUrl)
@@ -62,17 +63,8 @@ function WebSocketHandler({connectionState, setPlayers, setMoves, setPieces, set
         const jsonString = moveString.replace(/'/g, '"');
         const moveData = JSON.parse(jsonString);
 
-        // console.log('Move Data:', moveData);
-
-        // update game state
-        // const temp_chess = new Chess();
-        // temp_chess.move(moveData.move);
-        // setGame(temp_chess);
         setLatestMove(moveData.move);
         console.log('Set Latest Move:', moveData.move);
-
-        // console.log('Game State:', temp_chess.fen());
-
 
         // if white we want to update white moves list, else black
         setMoves(prevMoves => {
@@ -101,6 +93,10 @@ function WebSocketHandler({connectionState, setPlayers, setMoves, setPieces, set
         console.error('Error parsing move:', error);
         console.error('Raw move data:', moveWrapper);
       }
+    });
+
+    socket.on('request_move', () => {
+      setIsBoardEnabled(true);
     });
 
     socket.on("game_over", () => {

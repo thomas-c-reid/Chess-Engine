@@ -8,9 +8,9 @@ export function ControlButtons({setTimerState}) {
     }
     return (
         <>
-            <button className='game-control-button pause' onClick={pauseGame}>
+            {/* <button className='game-control-button pause' onClick={pauseGame}>
                 <FontAwesomeIcon icon={faPause} />
-            </button>
+            </button> */}
             <button className='game-control-button kill'>
                 <FontAwesomeIcon icon={faSkull} />
             </button>
