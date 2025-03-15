@@ -56,7 +56,7 @@ function WebSocketHandler({setSocket, connectionState, setPlayers, setMoves, set
     socket.on("new_move", (moveWrapper) => {
       try {
 
-        console.log('New Move:', moveWrapper);
+        console.log('move received:', moveWrapper);
   
         // grab the move data from the moveWrapper and parse it to JSON
         const moveString = moveWrapper.move;
@@ -64,7 +64,6 @@ function WebSocketHandler({setSocket, connectionState, setPlayers, setMoves, set
         const moveData = JSON.parse(jsonString);
 
         setLatestMove(moveData.move);
-        console.log('Set Latest Move:', moveData.move);
 
         // if white we want to update white moves list, else black
         setMoves(prevMoves => {
@@ -86,7 +85,6 @@ function WebSocketHandler({setSocket, connectionState, setPlayers, setMoves, set
         setPieces(moveData.taken_pieces);
 
         setTimerState('running');
-        console.log('Player Turn:', moveData.player.toLowerCase())
         setPlayerTurn(moveData.player.toLowerCase());
 
       } catch (error) {

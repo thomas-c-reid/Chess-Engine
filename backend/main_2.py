@@ -15,7 +15,6 @@ def main():
     if args.web:
         ws_service = WebSocketService(chess_engine=chess_engine)
         ws_service.start_server()
-        # we will want to check if 
         
     else:
         ...

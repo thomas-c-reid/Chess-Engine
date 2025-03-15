@@ -4,7 +4,7 @@ import { Chess } from "chess.js";
 import './css/board.css'
 
 
-const Board = ({latest_move, setLatestMove, starting_fen, isBoardEnabled, setIsBoardEnabled, socket}) => {
+const Board = ({latest_move, setLatestMove, setPlayerTurn, starting_fen, setMoves, isBoardEnabled, setIsBoardEnabled, socket}) => {
 
     const [game, setGame] = useState(new Chess());
 
@@ -24,6 +24,22 @@ const Board = ({latest_move, setLatestMove, starting_fen, isBoardEnabled, setIsB
         };
     
         if (move === null) return false;
+
+        setMoves(prevMoves => {
+
+            const player = game.turn() === "w" ? "white" : "black";
+  
+            const formattedMove = {
+              move: latest_move.to,
+              time: '00:00'
+            }
+  
+            return {
+              ...prevMoves,
+              [player]: [...(prevMoves[player] || []), formattedMove]
+            }
+  
+          });
 
         console.log("Move made:", move);
         setLatestMove(move);
@@ -51,15 +67,29 @@ const Board = ({latest_move, setLatestMove, starting_fen, isBoardEnabled, setIsB
             setGame((prevGame) => {
                 const newGame = new Chess(prevGame.fen());  // Copy previous state
                 
-                console.log("Game before move:", newGame.fen());
-                console.log("Attempting move:", latest_move);
-
                 try {
-                    newGame.move(latest_move);
+                // Prepare move object
+                const moveOptions = {
+                    from: latest_move.from,
+                    to: latest_move.to
+                };
+
+                if (
+                    (latest_move.to[1] === "8" || latest_move.to[1] === "1") &&
+                    newGame.get(latest_move.from)?.type === "p"
+                ) {
+                    moveOptions.promotion = latest_move.promotion || "q";
+                }
+                console.log('About to make move options: ', moveOptions)
+                newGame.move(moveOptions)
                 } catch (error) {
                     console.error("Error making move:", error);
                     return prevGame;
                 }
+                
+                const playerTurn = newGame.turn() === "w" ? "black" : "white"
+
+                setPlayerTurn(playerTurn);
     
                 return newGame;
             });

@@ -6,7 +6,7 @@ import { io } from "socket.io-client";
 import {postStartGame} from '../services/apiHandler';
 
 
-const Menu = ({setConnectionState}) => {
+const Menu = ({setConnectionState, setPlayerTurn}) => {
     const [selectedPlayerOne, setSelectedPlayerOne] = useState('');
     const [selectedPlayerTwo, setSelectedPlayerTwo] = useState('');
     const [selectedTimeOption, setSelectedTimeOption] = useState('');
@@ -57,19 +57,7 @@ const Menu = ({setConnectionState}) => {
         console.log('JUST EMIT WEBSOCKET START_GAME CONNECT')
 
         setConnectionState('READY')
-
-        // const payload = {
-        //     selected_player_names: [selectedPlayerOne, selectedPlayerTwo],
-        //     starts: selectedStartOption,
-        //     game_length: selectedTimeOption,
-        //     starting_fen: selectedFenString
-        // };
-
-        // try{
-        //     await postStartGame(payload, setConnectionState)
-        // } catch (err) {
-        //     console.log(err)
-        // }
+        setPlayerTurn('black')
     }
 
     useEffect(() => {

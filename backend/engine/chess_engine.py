@@ -12,11 +12,13 @@ import yaml
 import time
 import os 
 from services.message_handler import MessageHandler
+
+
 log_config = Logging()
 logger = log_config.get_logger()
 
 class ChessEngine:
-    
+        
     def __init__(self, message_handler: MessageHandler = None):
         self.board = chess.Board()
         self.message_handler = message_handler
@@ -30,6 +32,9 @@ class ChessEngine:
             self.agents = agent_config.get('agents')   
         self.connected = False
         self.loop = asyncio.get_event_loop()
+        self.manual_move_event = asyncio.Event()
+        self.manual_move = None
+        self.websocket_logger = log_config.get_logger('websocket')
                          
     def setup_game_environment(self, selected_player_names: list = [], starts: str = 'RAND', game_length: str ='5min', 
                                connect_web_sockets: bool = False, socket=None, verbose=False, starting_fen=None):
@@ -72,13 +77,9 @@ class ChessEngine:
             self.black_player = self.players[1 - self.players.index(self.white_player)]
                             
             
-        if starting_fen is not None:
-            try:
-                self.board.set_fen(starting_fen)
-                print(f'Board position:\n{self.board}\n{starting_fen}')
-            except ValueError:
-                print("Invalid FEN string provided.")
-            print(f'board position \n {self.board}')
+        if starting_fen:
+            print("starting fen", starting_fen)
+            self.board.set_fen(starting_fen)
             
         self.GameInformation = GameInformationDto(self.white_player, self.black_player, game_length, self.board)
         if verbose:
@@ -94,46 +95,61 @@ class ChessEngine:
             data = self.GameInformation.to_websocket()
             self.socketio.emit("new_game", data)
             print('SENDING NEW GAME WEBSOCKET')
-            # self.socketio.start_background_task(self.start_game)
+
+    def wait_for_manual_move(self):
+        """This is now synchronous and will block the current thread until a move is received."""
+        print('Waiting for manual move...')
+        self.socketio.emit('')
+        
+        self.manual_move_event.clear()  # Reset the event
+        while not self.manual_move_event.is_set():  # This will block the thread until the event is set
+            pass
+        
+        
+        if not self.manual_move:
+            raise RuntimeError('No Move received from manual player')
+        
+        move_data = self.manual_move['move']
+        
+        # Log the move received
+        self.websocket_logger.info(f'Move received: {move_data}')
+    
+        # Convert 'a7' to square index (0-63)
+        def parse_square(square_str):
+            file = square_str[0].lower()
+            rank = square_str[1]
+            file_number = ord(file) - ord('a')  # a=0, b=1, ..., h=7
+            rank_number = int(rank) - 1        # Converts "7" to 6 (0-based)
+            return chess.square(file_number, rank_number)
+        
+        from_square = parse_square(move_data['from'])
+        to_square = parse_square(move_data['to'])
+        
+        # Handle promotion conversion ('q' -> chess.QUEEN)
+        promotion_str = move_data.get('promotion')
             
+        # Get the piece that is moving
+        moved_piece = self.board.piece_at(from_square)
 
-    # async def wait_for_manual_move(self):
-    #     self.manual_event = asyncio.Event()  # Create the event each time
-    #     self.socketio.emit('request_move', None)
+        # Handle promotion conversion ('q' -> chess.QUEEN), but ONLY if it's a pawn move
+        promotion = None
+        if promotion_str and moved_piece and moved_piece.piece_type == chess.PAWN:
+            promotion = {"q": chess.QUEEN, "r": chess.ROOK, "b": chess.BISHOP, "n": chess.KNIGHT}.get(promotion_str.lower())   
+        
+        # Create the move object
+        move = chess.Move(from_square, to_square, promotion=promotion)
 
-    #     print("Waiting for manual move...")
-    #     print('Manual event 1', self.manual_event)
-    #     print("Event loop is running:", asyncio.get_event_loop().is_running())
+        self.manual_move = None  # Reset the manual move after processing
         
-    #     # Debug log before waiting to confirm it's actually being awaited
-    #     print("Before awaiting the event...")
-    #     await self.manual_event.wait()
-    #     print("After awaiting the event...")  # Should not be printed until the event is set
-
-    #     print("Manual move received:", self.manual_move)
-    #     self.manual_event.clear()
-    #     return self.manual_move
-    
-    
-    async def wait_for_manual_move(self):
-        
-        if not self.message_handler:
-            raise RuntimeError("MessageHandler not set")
-        
-        print('waiting on manual move')
-        move = await self.loop.run_in_executor(None, lambda: self.message_handler.get_move(timeout=30))
-        if not move:
-            raise RuntimeError("No move received")
         return move
-
+    
+    def receive_manual_move(self, move):
+        """This will be called from the WebSocketService when a move is received."""
+        self.manual_move = move
+        self.manual_move_event.set()  # Trigger the event
+        print(f'Move received: {move}') 
            
-    async def start_game(self, verbose=False):
-        # TODO:
-        logger.info('STARTING GAME')
-        
-        await asyncio.sleep(5)
-        # need to change this to recieve a message from front end saying  'ready to go' or something
-                
+    def start_game(self, verbose=False):                        
         gameId = uuid4()
             
         turn = 0
@@ -141,21 +157,15 @@ class ChessEngine:
         game_over = False
         captured_pieces = {'white': [], 'black': []}
         
+        # Game loop
         while not game_over:
             if turn == 0:
-                print('White turn')
                 # White player takes turn                
                 if self.white_player['input_type'] == 'AUTO':
                     move_action: chess.Move = self.white_player['class'].make_move(self.board)
                 elif self.white_player['input_type'] == 'MANUAL':
-                    # need a function to wait for a move to come in through websockets
-                    x = await self.wait_for_manual_move()
-                    print('H'*500)
-                    print(x)
-                    print('H'*500)
-                    logger.info('Need to implement async websocket move')
-                    
-                print(move_action)
+                    self.socketio.emit('request_move', None)
+                    move_action = self.wait_for_manual_move()
                 
                 self.update_captured_pieces(move_action, 'white')  
                 
@@ -166,16 +176,13 @@ class ChessEngine:
                             drop=move_action.drop, fen_before_push=self.board.fen(), 
                             taken_pieces=self.taken_pieces)
             else:
-                print('Black turn')
                 # Black player takes turn
                 if self.black_player['input_type'] == 'AUTO':
                     move_action: chess.Move = self.black_player['class'].make_move(self.board)
                 elif self.black_player['input_type'] == 'MANUAL':
                     logger.info('Need to implement async websocket move')
-                    x = await self.wait_for_manual_move()
-                    print('H'*500)
-                    print(x)
-                    print('H'*500)
+                    self.socketio.emit('request_move', None)
+                    move_action = self.wait_for_manual_move()
                     
                 self.update_captured_pieces(move_action, 'black')
                     
@@ -185,22 +192,27 @@ class ChessEngine:
                                to_square=move_action.to_square, promotion=move_action.promotion,
                                drop=move_action.drop, fen_before_push=self.board.fen(),
                                taken_pieces=self.taken_pieces)
-                
             
             if self.connected:
                 data = move.to_socket()
-                print('+'*50)
-                print('sending move to socket', data)
-                print('+'*50)
-                self.socketio.emit("new_move", {"move": str(data)})
-                self.socketio.sleep(3)
+                if turn == 0:
+                    if self.white_player['input_type'] != 'MANUAL':
+                        self.socketio.emit("new_move", {"move": str(data)})
+                        self.websocket_logger.info(f'Sending move: {data}')
+                        
+                else:
+                    if self.black_player['input_type'] != 'MANUAL':
+                        self.socketio.emit("new_move", {"move": str(data)})
+                        self.websocket_logger.info(f'Sending move: {data}')
+                        
                 
             if isinstance(move, MoveDto):
                 move = chess.Move.from_uci(move.move)
             elif isinstance(move, str):
                 move = chess.Move.from_uci(move)
-
+                
             self.board.push(move)
+
             
             # Check terminal state
             if self.board.is_checkmate():
@@ -226,7 +238,6 @@ class ChessEngine:
             
             if verbose:
                 print(f'[{turn}] move', move)
-                # print(self.board.fen())
                 print(self.board)
                 logger.info('*'*50)
         

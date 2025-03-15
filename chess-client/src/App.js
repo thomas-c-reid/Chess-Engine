@@ -44,8 +44,9 @@ function App() {
   return (
     <div className={`App ${isFullScreen ? "minimised" : ""}`}>
         <WebSocketHandler setSocket={setSocket} connectionState={connectionState} setPlayers={setPlayers} setMoves={setMoves} setPieces={setPieces} setTime={setTime} setTimerState={setTimerState} setPlayerTurn={setPlayerTurn} setLatestMove={setLatestMove} setStartingFen={setStartingFen} setIsBoardEnabled={setIsBoardEnabled}/>
-        <Navbar setConnectionState={setConnectionState} setIsFullScreen={setIsFullScreen}/>
-        <Screen players={players} moves={moves} pieces={pieces} time={time} timerState={timerState} setTimerState={setTimerState} playerTurn={playerTurn} latest_move={latest_move} setLatestMove={setLatestMove} starting_fen={starting_fen} isBoardEnabled={isBoardEnabled} setIsBoardEnabled={setIsBoardEnabled} socket={socket}/>
+        <Navbar setConnectionState={setConnectionState} setPlayerTurn={setPlayerTurn} setIsFullScreen={setIsFullScreen}/>
+        {/* <Screen players={players} moves={moves} pieces={pieces} time={time} timerState={timerState} setTimerState={setTimerState} playerTurn={playerTurn} setPlayerTurn={setPlayerTurn} latest_move={latest_move} setLatestMove={setLatestMove} setMoves={setMoves} starting_fen={starting_fen} isBoardEnabled={isBoardEnabled} setIsBoardEnabled={setIsBoardEnabled} socket={socket}/> */}
+        <Screen players={players} moves={moves} pieces={pieces} time={time} timerState={timerState} setTimerState={setTimerState} playerTurn={playerTurn} setPlayerTurn={setPlayerTurn} latest_move={latest_move} setLatestMove={setLatestMove} setMoves={setMoves} starting_fen={starting_fen} isBoardEnabled={isBoardEnabled} setIsBoardEnabled={setIsBoardEnabled} socket={socket}/>
     </div>
   );
 }

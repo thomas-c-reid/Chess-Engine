@@ -4,6 +4,6 @@ time_options:
   - 5min
   - 10min
 starting_options:
-  - player_one_starts
-  - player_two_starts
+  - P1
+  - P2
   - random

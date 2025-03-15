@@ -23,6 +23,13 @@ handlers:
     filename: logger/logs/gameplay.log
     mode: 'a'
 
+  websockket_config:
+    class: logging.FileHandler
+    formatter: standard
+    level: INFO
+    filename: logger/logs/websocket.log
+    mode: 'a'
+
 root:
   level: INFO
   handlers: [console]
@@ -31,4 +38,9 @@ loggers:
   gameplay: 
     level: INFO
     handlers: [gameplay_config, console]
+    propagate: no
+
+  websocket:
+    level: INFO
+    handlers: [websockket_config, console]
     propagate: no
