@@ -1,13 +1,12 @@
-from engine.agents.evaluations.simple_eval import SimpleEvaluation
-from engine.agents.searchTree.simpleTreeSearch import SimpleTreeSearch
+from engine.agents.pythonAgents.evaluations.simple_eval import SimpleEvaluation
+from engine.agents.pythonAgents.searchTree.simpleTreeSearch import SimpleTreeSearch
+from engine.agents.base_agent import BaseAgent
 from engine.utils.agent_utils import get_legal_moves_for_turn
 
-
-class FunctionalAgent:
+class FunctionalAgent(BaseAgent):
     
     def __init__(self):
-        self.id = '0004'
-        self.name = 'FunctionalEngine'
+        super().__init__(id='0004', name='FunctionalEngine')
         self.search_params = {
             'evaluation': SimpleEvaluation(),
             'max_depth': 4,

@@ -4,11 +4,14 @@ import "./css/menu.css"
 import yaml from 'js-yaml';
 import { io } from "socket.io-client";
 import {postStartGame} from '../services/apiHandler';
+import useChesStore from '../store/chessStore';
 
 
-const Menu = ({setConnectionState, setPlayerTurn}) => {
-    const [selectedPlayerOne, setSelectedPlayerOne] = useState('');
-    const [selectedPlayerTwo, setSelectedPlayerTwo] = useState('');
+const Menu = () => {
+
+    const {setPlayerTurn, setConnectionState} = useChesStore();
+    const [selectedPlayerOne, setSelectedPlayerOne] = useState('RandomAgent');
+    const [selectedPlayerTwo, setSelectedPlayerTwo] = useState('RandomAgent');
     const [selectedTimeOption, setSelectedTimeOption] = useState('');
     const [selectedStartOption, setSelectedStartOption] = useState('');
     const [selectedFenString, setSelectedFenString] = useState("")

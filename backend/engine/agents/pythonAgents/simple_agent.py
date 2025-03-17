@@ -1,5 +1,5 @@
-from engine.agents.evaluations.piece_eval import PieceEvaluation
-from engine.agents.searchTree.simpleTreeSearch import SimpleTreeSearch
+from engine.agents.pythonAgents.evaluations.piece_eval import PieceEvaluation
+from engine.agents.pythonAgents.searchTree.simpleTreeSearch import SimpleTreeSearch
 from engine.utils.agent_utils import get_legal_moves_for_turn
 
 

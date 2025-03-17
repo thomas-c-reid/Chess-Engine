@@ -1,6 +1,6 @@
 import chess
 from copy import deepcopy
-from engine.agents.evaluations.simple_eval import SimpleEvaluation
+from engine.agents.pythonAgents.evaluations.simple_eval import SimpleEvaluation
 from engine.utils.agent_utils import get_legal_moves_for_turn
 from datetime import datetime
 

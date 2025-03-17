@@ -1,6 +1,6 @@
 import './css/movesContainer.css';
 
-export function MovesContainer ({moves, pieces}) {
+export function MovesContainer ({moves=[], pieces=[]}) {
 
     // const moves = [{move: 'e4', time: '2:41'}];
     // const taken_pieces =[{queen: 2}, {rook: 1}, {bishop: 1}, {knight: 1}, {pawn: 6}];
@@ -27,7 +27,7 @@ export function MovesContainer ({moves, pieces}) {
                     [...Array(count)].map((_, index) => (
                                 <img 
                     className="moves-taken-piece-img"
-                    src={pieceImages[key]} 
+                    src={pieceImages[key]}
                     />
                     ))
                 ))

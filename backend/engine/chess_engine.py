@@ -11,7 +11,6 @@ import chess
 import yaml
 import time
 import os 
-from services.message_handler import MessageHandler
 
 
 log_config = Logging()
@@ -19,9 +18,8 @@ logger = log_config.get_logger()
 
 class ChessEngine:
         
-    def __init__(self, message_handler: MessageHandler = None):
+    def __init__(self):
         self.board = chess.Board()
-        self.message_handler = message_handler
         
         backend_dir = os.path.dirname(os.path.realpath(__file__))  # Path to the current file's directory
         project_root = os.path.abspath(os.path.join(backend_dir, '../../'))

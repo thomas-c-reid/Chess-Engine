@@ -1,15 +1,14 @@
-from engine.agents.evaluations.simple_eval import SimpleEvaluation
-from engine.agents.searchTree.alphaBetaTreeSearch import AlphaBetaTreeSearch 
+from engine.agents.pythonAgents.evaluations.simple_eval import SimpleEvaluation
+from engine.agents.pythonAgents.searchTree.alphaBetaTreeSearch import minimax
+from engine.agents.base_agent import BaseAgent
 from engine.utils.agent_utils import get_legal_moves_for_turn
-from engine.agents.searchTree.alphaBetaTreeSearch import minimax
 import time
 import chess
 
-class PruningAgent:
+class PruningAgent(BaseAgent):
     
     def __init__(self):
-        self.id = '0005'
-        self.name = 'PruningAgent'
+        super().__init__(id='0005', name='PruningAgent')
         self.search_params = {
             'evaluation': SimpleEvaluation(),
             'max_depth': 3,

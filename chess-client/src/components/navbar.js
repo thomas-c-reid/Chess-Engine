@@ -5,7 +5,7 @@ import './css/navbar.css';
 
 // This component will be the 
 
-const Navbar = ({setConnectionState, setPlayerTurn, setIsFullScreen}) => {
+const Navbar = ({setIsFullScreen}) => {
 
     return (
       <div className ="navbar"
@@ -19,7 +19,7 @@ const Navbar = ({setConnectionState, setPlayerTurn, setIsFullScreen}) => {
           </select>
         </div>
 
-        <Menu className='menu' setPlayerTurn={setPlayerTurn} setConnectionState={setConnectionState}></Menu>
+        <Menu className='menu'></Menu>
         <Footer className='footer' setIsFullScreen={setIsFullScreen}></Footer>
       </div>
     );

@@ -1,7 +1,7 @@
-from engine.agents.evaluations.simple_eval import SimpleEvaluation
-from engine.agents.searchTree.alphaBetaTreeSearch import AlphaBetaTreeSearch 
-from engine.agents.searchTree.alphaBetaTreeSearch import minimax
-from engine.agents.openingBooks.openingBook import OpeningBook
+from engine.agents.pythonAgents.evaluations.simple_eval import SimpleEvaluation
+from engine.agents.pythonAgents.searchTree.alphaBetaTreeSearch import minimax
+from engine.agents.pythonAgents.openingBooks.openingBook import OpeningBook
+from engine.agents.base_agent import BaseAgent
 from engine.utils.agent_utils import get_legal_moves_for_turn
 from tqdm import tqdm
 import chess.polyglot
@@ -9,18 +9,18 @@ import chess
 import time
 import os
 
-class OpeningBookAgent:
+class OpeningBookAgent(BaseAgent):
     
     def __init__(self):
-        self.id = '0006'
-        self.name = 'OpeningBookAgent'
+        super().__init__(id='0006', name='OpeningBookAgent')
         self.search_params = {
             'evaluation': SimpleEvaluation(),
             'max_depth': 4,
             'verbose': True
         }
         self.search = minimax(**self.search_params)
-        self.bin_url = os.path.join('engine', 'agents', 'polyglotOpeningBooks', 'Titans.bin')
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.bin_url = os.path.normpath(os.path.join(base_dir, '..', 'polyglotOpeningBooks', 'Titans.bin'))
         self.opening_book = OpeningBook()
            
     def load_opening_book(self, verbose=False):

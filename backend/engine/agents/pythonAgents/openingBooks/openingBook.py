@@ -9,7 +9,7 @@ class OpeningBook:
     def __init__(self, bin_url=None):
         self.book = {}
         if not bin_url:
-            self.bin_url = os.path.join('engine', 'agents', 'polyglotOpeningBooks', 'Titans.bin')
+            self.bin_url = os.path.join('engine', 'agents', 'pythonAgents', 'polyglotOpeningBooks', 'Titans.bin')
         else:
             self.bin_url = bin_url            
         self.load_opening_book(verbose=True)

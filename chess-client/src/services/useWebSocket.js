@@ -1,12 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-import { Chess } from "chess.js";
 import {loadPlayerInformation} from '../utils/loadGameInformation'
+import useChesStore from "../store/chessStore";
 
-function WebSocketHandler({setSocket, connectionState, setPlayers, setMoves, setPieces, setTime, setTimerState, setPlayerTurn, setLatestMove, setStartingFen, setIsBoardEnabled}) {
-  const [isConnected, setIsConnected] = useState(false)
+const useWebSocket = ({setSocket}) => {
+
+  const {setPlayers, setMoves, setPieces, setTime, setTimerState, setPlayerTurn, setLatestMove, setIsBoardEnabled, connectionState, setGameFen, time} = useChesStore();
+
   const socketRef = useRef(null);
   const websocketUrl = "http://localhost:5000";
+
+  useEffect(() => {
+    if (connectionState === 'READY') {
+        connectToWebSocket();
+        console.log('CONNECTING TO WEBSOCKET')
+    }
+  }, [connectionState]);
 
   const connectToWebSocket = () => {
     if (socketRef.current) {
@@ -18,29 +27,22 @@ function WebSocketHandler({setSocket, connectionState, setPlayers, setMoves, set
     socketRef.current = socket
     setSocket(socketRef.current)
 
+
     socket.on("connect", () => {
         console.log('CONNECTED TO WEBSOCKET ON URL:', websocketUrl)
-        setIsConnected(true);
-      });
+    })
 
     socket.on("new_game", async (game_information) => {
-      console.log('Starting Game', game_information)
 
-      // update player information
       try {
         const playerData = await loadPlayerInformation(game_information.white, game_information.black); // Await the Promise
-        setPlayers(playerData); // Now it's resolved and can be used
+        setPlayers(playerData);
       } catch (error) {
           console.error("Error loading player information:", error);
       }
 
-      // update game state
-      // const temp_chess = new Chess();
-      // temp_chess.load(game_information.starting_fen);
-      // setGame(temp_chess);
-      setStartingFen(game_information.starting_fen);
+      setGameFen(game_information.starting_fen);
 
-      // update Time
       const timeMapping = {
         '1min': '1:00',
         '2min': '2:00',
@@ -48,31 +50,25 @@ function WebSocketHandler({setSocket, connectionState, setPlayers, setMoves, set
         '10min': '10:00'
       }
       const defaultTime = timeMapping[game_information.game_length] || '10:00';
+
       setTime({white: defaultTime, black: defaultTime});
-      setTimerState('paused');
-        
-    });
+      setTimerState('running');
+    })
 
     socket.on("new_move", (moveWrapper) => {
       try {
-
-        console.log('move received:', moveWrapper);
-  
-        // grab the move data from the moveWrapper and parse it to JSON
         const moveString = moveWrapper.move;
         const jsonString = moveString.replace(/'/g, '"');
         const moveData = JSON.parse(jsonString);
+        console.log('Move Received:', moveData);
 
         setLatestMove(moveData.move);
 
-        // if white we want to update white moves list, else black
         setMoves(prevMoves => {
-
           const player = moveData.player.toLowerCase();
-
           const formattedMove = {
             move: moveData.move.to,
-            time: '00:00'
+            time: moveData.time_taken || '00:00'
           }
 
           return {
@@ -83,31 +79,23 @@ function WebSocketHandler({setSocket, connectionState, setPlayers, setMoves, set
         });
 
         setPieces(moveData.taken_pieces);
-
-        setTimerState('running');
         setPlayerTurn(moveData.player.toLowerCase());
 
+
       } catch (error) {
-        console.error('Error parsing move:', error);
-        console.error('Raw move data:', moveWrapper);
+        console.error('Error parsing move:', error)
+        console.error('Raw move data:', moveWrapper)
       }
-    });
+    })
 
     socket.on('request_move', () => {
       setIsBoardEnabled(true);
-    });
+    })
 
     socket.on("game_over", () => {
-        console.log('Game finished')
+      console.log('GAME FINISH')
     })
-  }
 
-  useEffect(() => {
-    if (connectionState === 'READY') {
-        connectToWebSocket();
-    }
-  }, [connectionState]);
+}};
 
-};
-
-export default WebSocketHandler;
+export default useWebSocket;
