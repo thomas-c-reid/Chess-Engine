@@ -1,24 +1,58 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSkull, faPause, faRotateRight, faCopy } from "@fortawesome/free-solid-svg-icons";
+import useChesStore from "../store/chessStore";
+import { Chess } from "chess.js";
 
-export function ControlButtons({setTimerState}) {
+export function ControlButtons({socket}) {
 
-    const pauseGame = () => {
-        setTimerState('paused');
+    const {setTime, setGame, setTimerState, gameFen} = useChesStore();
+
+    const resetGame = () => {
+        console.log('RESETTING GAME')
+
+        if (!socket || !socket.emit) {
+            console.error("Socket not connected");
+            return false;
+        }
+
+        socket.emit("reset_game", 'reset_game_package', (ack) => {
+            console.log("Server acknowledged move:", ack);
+        });
+        setTime({white: '00:00', black: '00:00'});
+        setTimerState('disabled');
+        setGame(new Chess());
     }
+
+    const restartGame = () => {
+        console.log('RESTARTING GAME')
+
+        if (!socket || !socket.emit) {
+            console.error("Socket not connected");
+            return false;
+        }
+        
+        socket.emit("restart_game", 'restart_game_package', (ack) => {
+            console.log("Server acknowledged move:", ack);
+        });
+
+        setTime({white: '00:00', black: '00:00'});
+        setGame(new Chess());
+    }
+
+    const copyFen = () => {
+        navigator.clipboard.writeText(gameFen);
+    }
+
     return (
         <>
-            {/* <button className='game-control-button pause' onClick={pauseGame}>
-                <FontAwesomeIcon icon={faPause} />
-            </button> */}
             <button className='game-control-button kill'>
-                <FontAwesomeIcon icon={faSkull} />
+                <FontAwesomeIcon icon={faSkull} onClick={resetGame}/>
             </button>
             <button className='game-control-button restart'>
-                <FontAwesomeIcon icon={faRotateRight} />
+                <FontAwesomeIcon icon={faRotateRight} onClick={restartGame}/>
             </button>
             <button className='game-control-button fen'>
-                <FontAwesomeIcon icon={faCopy} />
+                <FontAwesomeIcon icon={faCopy} onClick={copyFen}/>
             </button> 
             <label className='game-control-button rating'>
                 +3

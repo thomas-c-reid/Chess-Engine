@@ -9,8 +9,11 @@ class Logging:
         config_dir = 'logger/logging_config.yaml'
         logs_dir = 'logger/logs'
         
-        if not os.path.exists(logs_dir):
-            os.makedirs(logs_dir)
+        for filename in os.listdir(logs_dir):
+            if not os.path.exists(logs_dir):
+                os.makedirs(logs_dir)
+            else:
+                open(f'{logs_dir}/{filename}', 'w').close()
             
         if os.path.exists(config_dir):
             with open(config_dir, 'rt') as file:

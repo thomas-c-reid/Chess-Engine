@@ -9,7 +9,6 @@ export function Timer({whiteTime, blackTime, timerState, playerTurn}) {
     useEffect(() => {
         if (timerState === 'running') {
             const interval = setInterval(() => {
-                console.log('Bang')
                 if (playerTurn === 'white') {
                     setBlackTimer(prevTime => prevTime > 0 ? prevTime - 1 : 0);
                 } else {

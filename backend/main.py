@@ -2,59 +2,37 @@ import sys
 
 sys.dont_write_bytecode = True
 
-from engine.chess_engine import ChessEngine
-from flask import Flask
-from flask_cors import CORS
-from flask_socketio import SocketIO
-from routes import api_routes
 import argparse
-import asyncio
+from services.websocket_service import WebSocketService
+from chessArena.chess_engine import ChessEngine
 
-parser = argparse.ArgumentParser(description="Chess Engine with Command-Line Arguments")
-parser.add_argument('-web', action='store_true', help="Enable web app")
+def main():
+    parser = argparse.ArgumentParser(description="Chess Engine for RL agents")
+    parser.add_argument('-web', action='store_true', help="Enable web app")
 
-app = Flask(__name__)
-CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
-
-chess_engine = ChessEngine()
-chess_engine.socketio = socketio  # Pass the socketio instance to ChessEngine
-
-api_routes.chess_engine = chess_engine
-api_routes.socketio = socketio
-
-# Register routes
-app.register_blueprint(api_routes, url_prefix="/api")
-
-async def run_game():
-    params = {
-        'selected_player_names': ['OpeningBookAgent', 'ManualPlay'],
-        'starts': 'P1',
-        'game_length': '5min',
-        'connect_web_sockets': True,
-        'socket': chess_engine.socketio,
-        'verbose': True
-    }
-    await chess_engine.setup_game_environment(**params)
-    await chess_engine.start_game(verbose=True)
-
-if __name__ == '__main__':
     args = parser.parse_args()
+    
+    chess_engine = ChessEngine()
 
     if args.web:
-        socketio.run(app, debug=False, host="localhost", port=5000)
+        ws_service = WebSocketService(chess_engine=chess_engine)
+        ws_service.start_server()
+        
     else:
-        async def main():
-            params = {
-                'selected_player_names': ['OpeningBookAgent', 'RandomAgent'],
-                'starts': 'P1',
-                'game_length': '5min',
-                'connect_web_sockets': False,
-                'socket': None,
-                'verbose': True
-            }
-            await chess_engine.setup_game_environment(**params)
-            await chess_engine.start_game(verbose=True)
-
-        asyncio.run(main())
-        # chess_engine.start_game(verbose=True)
+        chess_engine.setup_game_environment(selected_player_names=['AlphaGoAgent', 'RandomAgent'], starts='P1', game_length='5min', connect_web_sockets=False, socket=None, verbose=True)
+        chess_engine.start_game()
+        # websocket_service.start_game()
+        
+        # default_params = {
+        #     'selected_player_names': ['OpeningBookAgent', 'RandomAgent'],
+        #     'starts': 'P1',
+        #     'game_length': '5min',
+        #     'connect_web_sockets': False,
+        #     'socket': None,
+        #     'verbose': True
+        # }
+        
+        # gamee_runner
+        
+if __name__ == '__main__':
+    main()

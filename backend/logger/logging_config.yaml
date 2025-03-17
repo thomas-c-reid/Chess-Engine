@@ -30,6 +30,13 @@ handlers:
     filename: logger/logs/websocket.log
     mode: 'a'
 
+  valuenetwork_config:
+    class: logging.FileHandler
+    formatter: standard
+    level: INFO
+    filename: logger/logs/valuenetwork.log
+    mode: 'a'
+
 root:
   level: INFO
   handlers: [console]
@@ -43,4 +50,9 @@ loggers:
   websocket:
     level: INFO
     handlers: [websockket_config, console]
+    propagate: no
+
+  valuenetwork:
+    level: INFO
+    handlers: [valuenetwork_config]
     propagate: no

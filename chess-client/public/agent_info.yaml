@@ -1,13 +1,16 @@
 agents:
   RandomAgent:
     id: 0
+    lang: 'python'
     name: 'RandomAgent'
     input_type: 'AUTO'
-    file_location: 'engine.agents.random_agent'
+    file_location: 'engine.agents.pythonAgents.random_agent'
     bio: 'Estimated ELO: 50'
+    description: 'This is a very simple agent - given a list of legal moves, it will randomly select one.'
     img_url: 'agent_icons/random.png'
   ManualPlay:
     id: 2
+    lang: 'python'
     name: 'ManualPlay'
     input_type: 'MANUAL'
     file_location: None
@@ -15,29 +18,46 @@ agents:
     img_url: 'agent_icons/random.png'
   SimpleAgent:
     id: 3
+    lang: 'python'
     name: 'SimpleAgent'
     input_type: 'AUTO'
-    file_location: 'engine.agents.simple_agent'
+    file_location: 'engine.agents.pythonAgents.simple_agent'
     bio: 'looks for potential to gain pieces'
+    description: 'This is another very simple agent - it analyse the given position and choose the move that will give it the greatest score increase - however it does not look any amount of steps into the future and will therefore be prone to leaving pieces hanging.'
     img_url: 'agent_icons/simple.png'
   FunctionalAgent:
     id: 4
+    lang: 'python'
     name: 'FunctionalAgent'
     input_type: 'AUTO'
-    file_location: 'engine.agents.functional_agent'
+    file_location: 'engine.agents.pythonAgents.functional_agent'
     bio: 'look ahead search'
+    description: 'This agent uses a minimax algorithm without any sort of pruning efficiency. It uses a simple evaluation function to determine the value of a position.'
     img_url: 'agent_icons/functional.png'
   PruningAgent:
     id: 5
+    lang: 'python'
     name: 'PruningAgent'
     input_type: 'AUTO'
-    file_location: 'engine.agents.pruning_agent'
+    file_location: 'engine.agents.pythonAgents.pruning_agent'
     bio: 'prunes stuff'
+    description: 'This agent uses a minimax algorithm with alpha-beta pruning to increase efficiency. It uses a simple evaluation function to determine the value of a position.'
     img_url: 'agent_icons/pruning.png'
   OpeningBookAgent:
     id: 6
+    lang: 'python'
     name: 'OpeningBookAgent'
     input_type: 'AUTO'
-    file_location: 'engine.agents.opening_book_agent'
+    file_location: 'engine.agents.pythonAgents.opening_book_agent'
     bio: 'prunes stuff'
+    description: 'This agent uses a minimax algorithm with alpha-beta pruning to increase efficiency. it also uses a polyglot opening book to choose openings used my chess grand-masters.'
     img_url: 'agent_icons/pruning.png'
+  AlphaGoAgent:
+    id: 7
+    lang: 'python'
+    name: 'AlphaGoAgent'
+    input_type: 'AUTO'
+    file_location: 'engine.agents.pythonAgents.AlphaGo_test'
+    bio: 'Implementation of AlphaGo model'
+    description: 'so far this is very basic implementation of AlphaGo model, it only contains a similarly trained value network which can be used to evaluate a boards position'
+    img_url: 'agent_icons/random.png'

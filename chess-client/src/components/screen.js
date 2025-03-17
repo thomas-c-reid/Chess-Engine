@@ -6,8 +6,13 @@ import {PlayerCard} from './playerCard';
 import './timer'
 import { Timer } from './timer';
 import { MovesContainer } from './movesContainer'; 
+import useChessStore from '../store/chessStore';
+import { Socket } from 'socket.io-client';
 
-const Screen = ({players, moves, pieces, time, timerState, setTimerState, playerTurn, setPlayerTurn, latest_move, setLatestMove, setMoves, starting_fen, isBoardEnabled, setIsBoardEnabled, socket}) => {
+// const Screen = ({players, moves, pieces, time, timerState, setTimerState, playerTurn, setPlayerTurn, latest_move, setLatestMove, setMoves, starting_fen, isBoardEnabled, setIsBoardEnabled, socket}) => {
+const Screen = ({socket}) => {
+
+    const {players, moves, pieces, time, timerState, playerTurn} = useChessStore();
     
     return (
         <div className='screen'>
@@ -24,7 +29,7 @@ const Screen = ({players, moves, pieces, time, timerState, setTimerState, player
                     </div>
 
                     <div className="game-control-button-container">
-                        <ControlButtons setTimerState={setTimerState} />
+                        <ControlButtons socket={Socket}/>
                     </div>
                 </div>
 
@@ -41,7 +46,7 @@ const Screen = ({players, moves, pieces, time, timerState, setTimerState, player
 
                 <div className="board-contanier">
                     {/* <Board game={game} setGame={setGame}/> */}
-                    <Board latest_move={latest_move} setLatestMove={setLatestMove} setPlayerTurn={setPlayerTurn} starting_fen={starting_fen} setMoves={setMoves} isBoardEnabled={isBoardEnabled} setIsBoardEnabled={setIsBoardEnabled} socket={socket}/>
+                    <Board socket={socket}/>
                 </div>
                 <MovesContainer moves={moves.black} pieces={pieces.black}/>
             </div>

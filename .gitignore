@@ -4,3 +4,4 @@ node_modules
 socket-client.js
 TODO.txt
 frontend
+.env
