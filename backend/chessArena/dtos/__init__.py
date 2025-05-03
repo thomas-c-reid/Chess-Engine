@@ -1,5 +1,5 @@
-from engine.dtos.GameInformationDto import GameInformationDto
-from engine.dtos.MoveDto import MoveDto
+from chessArena.dtos.GameInformationDto import GameInformationDto
+from chessArena.dtos.MoveDto import MoveDto
 
 __all__ = [
     'MoveDto',

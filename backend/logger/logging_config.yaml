@@ -37,6 +37,20 @@ handlers:
     filename: logger/logs/valuenetwork.log
     mode: 'a'
 
+  moveanalysis_config:
+    class: logging.FileHandler
+    formatter: standard
+    level: INFO
+    filename: logger/logs/moveanalysis.log
+    mode: 'a'
+
+  gamehandler_config:
+    class: logging.FileHandler
+    formatter: standard
+    level: INFO
+    filename: logger/logs/gamehandler.log
+    mode: 'a'
+
 root:
   level: INFO
   handlers: [console]
@@ -55,4 +69,14 @@ loggers:
   valuenetwork:
     level: INFO
     handlers: [valuenetwork_config]
+    propagate: no
+
+  moveAnalysis:
+    level: INFO
+    handlers: [moveanalysis_config]
+    propagate: no
+
+  GameHandler:
+    level: INFO
+    handlers: [gamehandler_config]
     propagate: no

@@ -1,4 +1,4 @@
-from engine.enums.GameLengthEnum import GameLengthEnum
+from chessArena.enums.GameLengthEnum import GameLengthEnum
 
 __all__ = [
     'GameLengthEnum'

@@ -1,6 +1,6 @@
 from random import choice
-from engine.utils.agent_utils import get_legal_moves_for_turn
-from engine.agents.base_agent import BaseAgent
+from chessArena.utils.agent_utils import get_legal_moves_for_turn
+from chessArena.agents.base_agent import BaseAgent
 
 class RandomAgent(BaseAgent):
     

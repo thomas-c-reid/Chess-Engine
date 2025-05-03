@@ -1,6 +1,6 @@
-from engine.agents.pythonAgents.searchTree.simpleTreeSearch import SimpleTreeSearch
-from engine.agents.base_agent import BaseAgent
-from engine.utils.agent_utils import get_legal_moves_for_turn
+from chessArena.agents.pythonAgents.searchTree.simpleTreeSearch import SimpleTreeSearch
+from chessArena.agents.base_agent import BaseAgent
+from chessArena.utils.agent_utils import get_legal_moves_for_turn
 
 class FunctionalAgent(BaseAgent):
     

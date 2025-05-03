@@ -1,7 +1,7 @@
-from engine.agents.pythonAgents.evaluations.simple_eval import SimpleEvaluation
-from engine.agents.pythonAgents.searchTree.alphaBetaTreeSearch import minimax
-from engine.agents.base_agent import BaseAgent
-from engine.utils.agent_utils import get_legal_moves_for_turn
+from chessArena.agents.pythonAgents.evaluations.simple_eval import SimpleEvaluation
+from chessArena.agents.pythonAgents.searchTree.alphaBetaTreeSearch import minimax
+from chessArena.agents.base_agent import BaseAgent
+from chessArena.utils.agent_utils import get_legal_moves_for_turn
 import time
 import chess
 

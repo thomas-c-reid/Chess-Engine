@@ -15,7 +15,7 @@ export function ControlButtons({socket}) {
             return false;
         }
 
-        socket.emit("reset_game", 'reset_game_package', (ack) => {
+        socket.emit("terminate_game", '', (ack) => {
             console.log("Server acknowledged move:", ack);
         });
         setTime({white: '00:00', black: '00:00'});
@@ -31,7 +31,7 @@ export function ControlButtons({socket}) {
             return false;
         }
         
-        socket.emit("restart_game", 'restart_game_package', (ack) => {
+        socket.emit("restart_game", '', (ack) => {
             console.log("Server acknowledged move:", ack);
         });
 

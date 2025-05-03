@@ -1,5 +1,6 @@
 from chessArena.dtos.GameInformationDto import GameInformationDto
 from chessArena.dtos.MoveDto import MoveDto
+from chessArena.enums.GameState import GameState
 from logger.logger_config import Logging
 from datetime import datetime
 from random import choice
@@ -13,13 +14,11 @@ import os
 
 
 log_config = Logging()
-logger = log_config.get_logger()
+logger = log_config.get_logger('chess_engine')
 
 class ChessEngine:
         
     def __init__(self):
-        self.board = chess.Board()
-        
         backend_dir = os.path.dirname(os.path.realpath(__file__))  # Path to the current file's directory
         project_root = os.path.abspath(os.path.join(backend_dir, '../../'))
         yaml_file_path = os.path.join(project_root, 'chess-client/public/agent_info.yaml')
@@ -28,21 +27,45 @@ class ChessEngine:
             agent_config = yaml.safe_load(file)
             self.agents = agent_config.get('agents')   
         self.connected = False
-        self.loop = asyncio.get_event_loop()
-        self.manual_move_event = asyncio.Event()
-        self.manual_move = None
-        self.websocket_logger = log_config.get_logger('websocket')
                          
-    def setup_game_environment(self, selected_player_names: list = [], starts: str = 'RAND', game_length: str ='5min', 
-                               connect_web_sockets: bool = False, socket=None, verbose=False, starting_fen=None):
+    def setup_game_environment(self, selected_player_names: list = [], 
+                               starts: str = 'RAND', game_length: str ='5min',
+                               starting_fen=None):
         """
-        params:
-        - starts: (str) a choice from: RAND, P1, P2 - decides who starts as White
-        - GameLength: (Enum) 
-        """        
-        self.manual_move = None
-                           
-        # select players
+        Will create a new instance of a game, load in the relevant players and set up the board.
+        Should return a GameInformationDto object with the game information.
+        """              
+        self.game_id = uuid4()
+        # load agents
+        self.board = chess.Board()
+        self.taken_pieces = {'white': [{'queen': 0}, {'rook': 0}, {'bishop': 0}, {'knight': 0}, {'pawn': 0}], 
+                             'black': [{'queen': 0}, {'rook': 0}, {'bishop': 0}, {'knight': 0}, {'pawn': 0}]}
+        self.load_agents(selected_player_names)            
+        
+        # Select colour
+        if starts == 'P1':
+            self.white_player = self.players[0]
+            self.black_player = self.players[1]
+        elif starts == 'P2':
+            self.black_player = self.players[0]
+            self.white_player = self.players[1]
+        else:
+            self.white_player = choice(self.players)
+            self.black_player = self.players[1 - self.players.index(self.white_player)]
+            
+        # set starting fen of board - if necessary
+        if starting_fen:
+            print("starting fen", starting_fen)
+            self.board.set_fen(starting_fen)
+            
+        self.GameInformation = GameInformationDto(self.white_player, self.black_player, 
+                                                  game_length, self.board, 
+                                                  self.get_game_state(), self.game_id)
+        logger.info(self.GameInformation)
+
+        return self.GameInformation
+    
+    def load_agents(self, selected_player_names: list = []):
         self.players = []
         for selected_agent in selected_player_names:
             for agent_name, agent_info in self.agents.items():
@@ -60,185 +83,43 @@ class ChessEngine:
             module = importlib.import_module('engine.agents.random_agent')
             agent_class = getattr(module, 'RandomAgent')
             self.players.append({'name': 'RandomAgent', 'input_type': 'AUTO', 'class': agent_class()})
-                                
-                                
-        # Select colour
-        if starts == 'P1':
-            self.white_player = self.players[0]
-            self.black_player = self.players[1]
-        elif starts == 'P2':
-            self.black_player = self.players[0]
-            self.white_player = self.players[1]
-        else:
-            self.white_player = choice(self.players)
-            self.black_player = self.players[1 - self.players.index(self.white_player)]
-                            
-            
-        if starting_fen:
-            print("starting fen", starting_fen)
-            self.board.set_fen(starting_fen)
-            
-        self.GameInformation = GameInformationDto(self.white_player, self.black_player, game_length, self.board)
-        if verbose:
-            logger.info(self.GameInformation)
-            
-        self.taken_pieces = {'white': [{'queen': 0}, {'rook': 0}, {'bishop': 0}, {'knight': 0}, {'pawn': 0}], 
-                             'black': [{'queen': 0}, {'rook': 0}, {'bishop': 0}, {'knight': 0}, {'pawn': 0}]}
-            
-        if connect_web_sockets:
-            self.socketio = socket
-            self.connected = True
-            self.socketio.sleep(1)  # Allow WebSocket time to stabilize
-            data = self.GameInformation.to_websocket()
-            self.socketio.emit("new_game", data)
-            print('SENDING NEW GAME WEBSOCKET')
-
-    def wait_for_manual_move(self):
-        """This is now synchronous and will block the current thread until a move is received."""
-        print('Waiting for manual move...')
-        self.socketio.emit('')
-        
-        self.manual_move_event.clear()  # Reset the event
-        while not self.manual_move_event.is_set():  # This will block the thread until the event is set
-            pass
-        
-        
-        if not self.manual_move:
-            raise RuntimeError('No Move received from manual player')
-        
-        move_data = self.manual_move['move']
-        
-        # Log the move received
-        self.websocket_logger.info(f'Move received: {move_data}')
-    
-        # Convert 'a7' to square index (0-63)
-        def parse_square(square_str):
-            file = square_str[0].lower()
-            rank = square_str[1]
-            file_number = ord(file) - ord('a')  # a=0, b=1, ..., h=7
-            rank_number = int(rank) - 1        # Converts "7" to 6 (0-based)
-            return chess.square(file_number, rank_number)
-        
-        from_square = parse_square(move_data['from'])
-        to_square = parse_square(move_data['to'])
-        
-        # Handle promotion conversion ('q' -> chess.QUEEN)
-        promotion_str = move_data.get('promotion')
-            
-        # Get the piece that is moving
-        moved_piece = self.board.piece_at(from_square)
-
-        # Handle promotion conversion ('q' -> chess.QUEEN), but ONLY if it's a pawn move
-        promotion = None
-        if promotion_str and moved_piece and moved_piece.piece_type == chess.PAWN:
-            promotion = {"q": chess.QUEEN, "r": chess.ROOK, "b": chess.BISHOP, "n": chess.KNIGHT}.get(promotion_str.lower())   
-        
-        # Create the move object
-        move = chess.Move(from_square, to_square, promotion=promotion)
-
-        self.manual_move = None  # Reset the manual move after processing
-        
-        return move
-    
-    def receive_manual_move(self, move):
-        """This will be called from the WebSocketService when a move is received."""
-        self.manual_move = move
-        self.manual_move_event.set()  # Trigger the event
-        print(f'Move received: {move}') 
-           
-    def start_game(self, verbose=False):                        
-        gameId = uuid4()
-            
-        turn = 0
-        move_idx = 1
-        game_over = False
-        captured_pieces = {'white': [], 'black': []}
-        
-        # Game loop
-        while not game_over:
-            if turn == 0:
-                # White player takes turn                
-                if self.white_player['input_type'] == 'AUTO':
-                    move_action: chess.Move = self.white_player['class'].make_move(self.board)
-                elif self.white_player['input_type'] == 'MANUAL':
-                    self.socketio.emit('request_move', None)
-                    move_action = self.wait_for_manual_move()
+                                 
+    def make_move(self, move=None):
+        if not move:
+            if self.board.turn:
+                move_action: chess.Move = self.white_player['class'].make_move(self.board)
+            else:
+                move_action: chess.Move = self.black_player['class'].make_move(self.board)
                 
-                self.update_captured_pieces(move_action, 'white')  
-                
-                move = MoveDto(game_id=gameId, move=move_action.uci(), 
-                            player='White', move_idx=move_idx, 
-                            time=datetime.now(), from_square=move_action.from_square,
+            self.update_captured_pieces(move_action)
+            
+            move =  MoveDto(self.game_id, move=move_action.uci(),
+                            player='White' if self.board.turn else 'Black',
+                            move_idx=1, time=datetime.now(), from_square=move_action.from_square,
                             to_square=move_action.to_square, promotion=move_action.promotion,
-                            drop=move_action.drop, fen_before_push=self.board.fen(), 
+                            drop=move_action.drop, fen_before_push=self.board.fen(),
                             taken_pieces=self.taken_pieces)
-            else:
-                # Black player takes turn
-                if self.black_player['input_type'] == 'AUTO':
-                    move_action: chess.Move = self.black_player['class'].make_move(self.board)
-                elif self.black_player['input_type'] == 'MANUAL':
-                    logger.info('Need to implement async websocket move')
-                    self.socketio.emit('request_move', None)
-                    move_action = self.wait_for_manual_move()
-                    
-                self.update_captured_pieces(move_action, 'black')
-                    
-                move = MoveDto(game_id=gameId, move=move_action.uci(), 
-                               player='Black', move_idx=move_idx, 
-                               time=datetime.now(), from_square=move_action.from_square,
-                               to_square=move_action.to_square, promotion=move_action.promotion,
-                               drop=move_action.drop, fen_before_push=self.board.fen(),
-                               taken_pieces=self.taken_pieces)
             
-            if self.connected:
-                data = move.to_socket()
-                if turn == 0:
-                    if self.white_player['input_type'] != 'MANUAL':
-                        self.socketio.emit("new_move", {"move": str(data)})
-                        self.websocket_logger.info(f'Sending move: {data}')
-                        
-                else:
-                    if self.black_player['input_type'] != 'MANUAL':
-                        self.socketio.emit("new_move", {"move": str(data)})
-                        self.websocket_logger.info(f'Sending move: {data}')
-                        
-                
-            if isinstance(move, MoveDto):
-                move = chess.Move.from_uci(move.move)
-            elif isinstance(move, str):
-                move = chess.Move.from_uci(move)
-                
-            self.board.push(move)
-
-            
-            # Check terminal state
-            if self.board.is_checkmate():
-                winner = "Black" if self.board.turn else "White"
-                logger.info("Game over! Winner: ", winner)
-                game_over = True
-            elif self.board.is_stalemate():
-                logger.info("Game over! It's a stalemate.")
-                game_over = True
-            elif self.board.is_insufficient_material():
-                logger.info("Game over! Draw due to insufficient material.")
-                game_over = True
-            elif self.board.is_seventyfive_moves():
-                logger.info("Game over! Draw due to seventy-five-move rule.")
-                game_over = True
-            elif self.board.is_fivefold_repetition():
-                logger.info("Game over! Draw due to fivefold repetition.")
-                game_over = True
-            else:
-                # Game continues
-                turn = self.change_turn(turn)
-                move_idx += 1
-            
-            if verbose:
-                print(f'[{turn}] move', move)
-                print(self.board)
-                logger.info('*'*50)
+        if isinstance(move, MoveDto):
+            move = chess.Move.from_uci(move.move)
+        elif isinstance(move, str):
+            move = chess.Move.from_uci(move)   
+         
+        self.board.push(move)     
+        # Now you need to build back up the GameInformationDto object to return to the client
+    
+        self.GameInformation.board = self.board
+        self.GameInformation.game_state = self.get_game_state()
+        self.GameInformation.last_move = move
         
-    def update_captured_pieces(self, move, colour):
+        print('+'*50)
+        print(self.board)
+        print(move)        
+        print('+'*50)
+        
+        return self.GameInformation
+    
+    def update_captured_pieces(self, move):
         """
         Update the taken_pieces list when a capture occurs
         
@@ -248,12 +129,15 @@ class ChessEngine:
             color: str - 'white' or 'black' indicating who made the move
         """
         # Get the piece at the destination square before the move
+        
+        print(move)
+        
         captured_square = self.board.piece_at(move.to_square)
         
         if captured_square is not None:  # If there was a piece at the destination
             # Determine which piece was captured
             piece_type = str(captured_square).lower()
-            opponent = 'black' if colour == 'white' else 'white'
+            opponent = 'white' if self.board.turn else 'black'
             
             # Map piece symbol to name
             piece_map = {
@@ -270,6 +154,38 @@ class ChessEngine:
                     if piece_map[piece_type] in piece_dict:
                         piece_dict[piece_map[piece_type]] += 1
                         break    
+            print('piece taken', self.taken_pieces)
+    
+    def get_game_state(self):
+        if self.board.turn:
+            if self.white_player['input_type'] == 'MANUAL':
+                game_state = 'WAITING'
+            else:
+                game_state = 'RUNNING'
+        else:
+            if self.black_player['input_type'] == 'MANUAL':
+                game_state = 'WAITING'
+            else:
+                game_state = 'RUNNING'
+                
+        if self.board.is_checkmate():
+            winner = "Black" if self.board.turn else "White"
+            logger.info(f"Game over! Winner: {winner}")
+            game_state = GameState.GAME_OVER
+        elif self.board.is_stalemate():
+            logger.info("Game over! It's a stalemate.")
+            game_state = GameState.GAME_OVER
+        elif self.board.is_insufficient_material():
+            logger.info("Game over! Draw due to insufficient material.")
+            game_state = GameState.GAME_OVER
+        elif self.board.is_seventyfive_moves():
+            logger.info("Game over! Draw due to seventy-five-move rule.")
+            game_state = GameState.GAME_OVER
+        elif self.board.is_fivefold_repetition():
+            logger.info("Game over! Draw due to fivefold repetition.")
+            game_state = GameState.GAME_OVER
+            
+        return game_state
     
     @staticmethod
     def change_turn(turn):

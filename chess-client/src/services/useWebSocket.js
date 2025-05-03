@@ -80,16 +80,13 @@ const useWebSocket = ({setSocket}) => {
 
         setPieces(moveData.taken_pieces);
         setPlayerTurn(moveData.player.toLowerCase());
+        setIsBoardEnabled(true);
 
 
       } catch (error) {
         console.error('Error parsing move:', error)
         console.error('Raw move data:', moveWrapper)
       }
-    })
-
-    socket.on('request_move', () => {
-      setIsBoardEnabled(true);
     })
 
     socket.on("game_over", () => {

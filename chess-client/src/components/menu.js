@@ -3,7 +3,6 @@ import {useState, useEffect, useRef} from 'react';
 import "./css/menu.css"
 import yaml from 'js-yaml';
 import { io } from "socket.io-client";
-import {postStartGame} from '../services/apiHandler';
 import useChesStore from '../store/chessStore';
 
 

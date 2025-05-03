@@ -1,6 +1,6 @@
-from engine.agents.pythonAgents.evaluations.piece_eval import PieceEvaluation
-from engine.agents.pythonAgents.searchTree.simpleTreeSearch import SimpleTreeSearch
-from engine.utils.agent_utils import get_legal_moves_for_turn
+from chessArena.agents.pythonAgents.evaluations.piece_eval import PieceEvaluation
+from chessArena.agents.pythonAgents.searchTree.simpleTreeSearch import SimpleTreeSearch
+from chessArena.utils.agent_utils import get_legal_moves_for_turn
 
 
 class SimpleAgent:

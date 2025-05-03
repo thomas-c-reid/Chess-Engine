@@ -1,5 +1,2 @@
-##### Game Information #####             
- [INFO] Game length: 5min             
- [x] White: AlphaGoAgent                 
- [o] Black: RandomAgent                     
-#############################
+Game handler instanciated
+STARTING GAME WITH WEBSOCKET CONNECTION

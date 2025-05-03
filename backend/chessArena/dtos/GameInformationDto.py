@@ -1,12 +1,14 @@
 class GameInformationDto:
     
-    def __init__(self, white_player, black_player, game_length, board):
+    def __init__(self, white_player, black_player, game_length, board, game_state, game_id, last_move=None):
         self.white_player = white_player
         self.black_player = black_player
         self.game_length = game_length
-        self.moves = []
         self.result = None
         self.board = board
+        self.game_state = game_state
+        self.last_move = last_move
+        self.game_id = game_id
     
     def __str__(self):
         

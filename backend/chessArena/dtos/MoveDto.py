@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 import json
-from engine.utils.chess_logic_utils import index_to_algebraic
+from chessArena.utils.chess_logic_utils import index_to_algebraic
 
 @dataclass
 class MoveDto:
