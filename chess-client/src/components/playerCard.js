@@ -4,7 +4,6 @@ export function PlayerCard({playerData, className=""}) {
 
     const isRight = className.includes('right');
 
-
     return (
         <div className={`player-card ${className}`}>
             {

@@ -3,8 +3,10 @@ import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import './css/board.css';
 import useChessStore from '../store/chessStore';
+// import useWebSocket from "../services/useWebSocket";
+import { useWebSocket } from "../services/webSocketContext";
 
-const Board = ({ socket }) => {
+const Board = () => {
     // Use chess store to manage the game state
     const {
         gameFen,
@@ -17,20 +19,15 @@ const Board = ({ socket }) => {
     } = useChessStore();
 
     const [game, setGame] = useState(new Chess());
+    const {sendMessage} = useWebSocket()
 
     function onDrop(sourceSquare, targetSquare) {
         if (!isBoardEnabled) return false;
-
-        if (!socket || !socket.emit) {
-            console.error("Socket not connected");
-            return false;
-        }
 
         const move = {
             from: sourceSquare,
             to: targetSquare
         };
-
         if (move === null) return false;
 
         setMoves(prevMoves => {
@@ -49,9 +46,12 @@ const Board = ({ socket }) => {
         console.log("Move made:", move);
         setLatestMove(move);
 
-        socket.emit("new_move", { move }, (ack) => {
-            console.log("Server acknowledged move:", ack);
-        });
+        sendMessage(JSON.stringify({'type': 'new_move', 'move': move}))
+
+        // socket.emit("new_move", { move }, (ack) => {
+        //     console.log("Server acknowledged move:", ack);
+        // });
+        // socket.currnet.send(JSON.stringify({'type': 'new_move', 'move': move}))
         setIsBoardEnabled(false);
     }
 
@@ -65,6 +65,7 @@ const Board = ({ socket }) => {
     }, [gameFen]);
 
     useEffect(() => {
+        console.log('ANY CHANCE??')
         if (latest_move) {
     
             const temp_game = new Chess(game.fen());

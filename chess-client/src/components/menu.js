@@ -2,24 +2,24 @@ import React from 'react';
 import {useState, useEffect, useRef} from 'react';
 import "./css/menu.css"
 import yaml from 'js-yaml';
-import { io } from "socket.io-client";
 import useChesStore from '../store/chessStore';
-
+import { useWebSocket } from '../services/webSocketContext';
 
 const Menu = () => {
 
-    const {setPlayerTurn, setConnectionState} = useChesStore();
+    const {sendMessage} = useWebSocket();
+
+    const {setPlayerTurn, setPlayers, setConnectionState, timeEnum, setTime, setTimerState} = useChesStore();
     const [selectedPlayerOne, setSelectedPlayerOne] = useState('RandomAgent');
     const [selectedPlayerTwo, setSelectedPlayerTwo] = useState('RandomAgent');
     const [selectedTimeOption, setSelectedTimeOption] = useState('');
     const [selectedStartOption, setSelectedStartOption] = useState('');
     const [selectedFenString, setSelectedFenString] = useState("")
 
-    const [isStartDisabled, setIsStartDisabled] = useState(true);
     const [gameOptions, setGameOptions] = useState({});
     const [playerOptions, setPlayerOptions] = useState([]);
-    const socketRef = useRef(null);
 
+    // FUNCTION TO LOAD PLAYER NAMES FOR DROPDOWN
     const loadGameData = async (setGameOptions, setPlayerOptions) => {
         // 1. Load agent options
         const agents_url = '/agent_info.yaml';
@@ -30,6 +30,7 @@ const Menu = () => {
         const agentsYamlText = await agents_response.text();
         const agentsParsedData = yaml.load(agentsYamlText);
         const agentsArray = Object.values(agentsParsedData.agents || {})
+        console.warn(agentsArray)
         setPlayerOptions(agentsArray)
         
         // 2. Load game settings
@@ -43,23 +44,62 @@ const Menu = () => {
         setGameOptions(parsedData || {})
     }
 
+    const load_player_from_name = (name) => {
+        console.log(name)
+        for (let i = 0; i < playerOptions.length; i++) {
+            let temp = playerOptions[i]
+            if (temp.name === name) {
+                return temp
+            }
+        }
+        return 0
+    }
+
     const handleStartGame = async () => {
 
-        if (!socketRef.current) {
-            socketRef.current = io("http://localhost:5000")
+        const getRandomStart = () => (Math.random() < 0.5 ? 'P1' : 'P2');
+
+        if (selectedStartOption === 'random') {
+            setSelectedStartOption(getRandomStart());
+        } else {
+            console.log('not random bro')
         }
 
-        socketRef.current.emit("new_game", {
+        if (!selectedFenString) {
+            switch (selectedStartOption){
+                case 'P1':
+                    setPlayers({white: load_player_from_name(selectedPlayerOne), black: load_player_from_name(selectedPlayerTwo)});
+                    break;
+                    case 'P2':
+                    setPlayers({white: load_player_from_name(selectedPlayerTwo), black: load_player_from_name(selectedPlayerOne)});
+                    break;
+                default:
+                    console.error(`${selectedStartOption} is starting`)
+                    break;
+                }
+        } else {
+            // implement logic to figure out which player should start
+        }
+
+        const game_request_data = {
             selected_player_names: [selectedPlayerOne, selectedPlayerTwo],
-            starts: selectedStartOption,
+            starts: selectedStartOption === 'random' ? getRandomStart() : selectedStartOption,
             game_length: selectedTimeOption,
             starting_fen: selectedFenString
-        })
-
-        console.log('JUST EMIT WEBSOCKET START_GAME CONNECT')
+        }
+        console.log(game_request_data)
+        sendMessage(JSON.stringify({'type': 'new_game', 'game_request': game_request_data}))
 
         setConnectionState('READY')
         setPlayerTurn('black')
+
+        const selectedTime = timeEnum[selectedTimeOption];
+        setTime({
+        white: selectedTime,
+        black: selectedTime
+        });
+        setTimerState('running')
+        console.log()
     }
 
     useEffect(() => {
@@ -83,7 +123,6 @@ const Menu = () => {
                 ) : (
                     <option value="error"></option>
                 )}
-               
                 </select>
             </div>
 
@@ -94,18 +133,15 @@ const Menu = () => {
                 className="player-choice-dropdown"
                 value={selectedPlayerTwo}
                 onChange={(e) => setSelectedPlayerTwo(e.target.value)}>
-                    {
-                        playerOptions.length > 0 ? (
-                            playerOptions.map((agent, idx) => (
-                                <option key={idx} value={agent.name}>
+                    {playerOptions.length > 0 ? (
+                            playerOptions.map((agent, index) => (
+                                <option key={index} value={agent.name}>
                                     {agent.name}
                                 </option>
                             ))
                         ) : (
                             <option value="incorrectly loaded agents"></option>
-                        )
-
-                    }
+                        )}
                 </select>
             </div>
 
@@ -153,7 +189,7 @@ const Menu = () => {
             </div>
 
             <div className="button-group">
-                <button className={`start-button ${isStartDisabled ? "active" : ""}`}
+                <button className={`start-button`}
                 onClick={handleStartGame}>
                     Start Match
                 </button>

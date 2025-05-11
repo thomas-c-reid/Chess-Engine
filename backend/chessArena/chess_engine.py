@@ -157,17 +157,6 @@ class ChessEngine:
             print('piece taken', self.taken_pieces)
     
     def get_game_state(self):
-        if self.board.turn:
-            if self.white_player['input_type'] == 'MANUAL':
-                game_state = 'WAITING'
-            else:
-                game_state = 'RUNNING'
-        else:
-            if self.black_player['input_type'] == 'MANUAL':
-                game_state = 'WAITING'
-            else:
-                game_state = 'RUNNING'
-                
         if self.board.is_checkmate():
             winner = "Black" if self.board.turn else "White"
             logger.info(f"Game over! Winner: {winner}")
@@ -184,6 +173,8 @@ class ChessEngine:
         elif self.board.is_fivefold_repetition():
             logger.info("Game over! Draw due to fivefold repetition.")
             game_state = GameState.GAME_OVER
+        else:
+            game_state = GameState.RUNNING
             
         return game_state
     

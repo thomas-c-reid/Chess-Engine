@@ -22,6 +22,12 @@ const useChesStore = create((set) => ({
         white: 300,
         black: 300
     },
+    timeEnum: {
+        "1min": 60,
+        "2min": 120,
+        "5min": 300,
+        "10min": 600
+    },
     timerState: 'disabled',
     playerTurn: 'None',
     latest_move: null,
@@ -41,6 +47,7 @@ const useChesStore = create((set) => ({
     setConnectionState: (connectionState) => set({connectionState}),
     setGameFen: (gameFen) => set({gameFen}),
 
+    websocketUrl: "http://localhost:5000",
 }));
 
 export default useChesStore;

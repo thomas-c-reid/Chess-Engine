@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import './css/timer.css';
+import useChesStore from '../store/chessStore';
 
-export function Timer({whiteTime, blackTime, timerState, playerTurn}) {
+export function Timer({whiteTime, blackTime, playerTurn}) {
+
+    const {timerState} = useChesStore()
 
     const [whiteTimer, setWhiteTimer] = useState(whiteTime);
     const [blackTimer, setBlackTimer] = useState(blackTime);

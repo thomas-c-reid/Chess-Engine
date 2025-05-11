@@ -20,8 +20,10 @@ class GameInformationDto:
     
     def to_websocket(self):
         return {
+            'game_id': str(self.game_id),
             'white': self.white_player['name'],
             'black': self.black_player['name'],
             'game_length': self.game_length,
-            'starting_fen': self.board.fen()
+            'fen': self.board.fen(),
+            'last_move': self.last_move.uci() if self.last_move else None
         }

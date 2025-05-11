@@ -7,12 +7,11 @@ import './timer'
 import { Timer } from './timer';
 import { MovesContainer } from './movesContainer'; 
 import useChessStore from '../store/chessStore';
-import { Socket } from 'socket.io-client';
 
 // const Screen = ({players, moves, pieces, time, timerState, setTimerState, playerTurn, setPlayerTurn, latest_move, setLatestMove, setMoves, starting_fen, isBoardEnabled, setIsBoardEnabled, socket}) => {
-const Screen = ({socket}) => {
+const Screen = () => {
 
-    const {players, moves, pieces, time, timerState, playerTurn} = useChessStore();
+    const {players, moves, pieces, time, playerTurn} = useChessStore();
     
     return (
         <div className='screen'>
@@ -25,11 +24,11 @@ const Screen = ({socket}) => {
 
                 <div className='timer-and-controls'>
                     <div className='player-timer-top-row'>
-                        <Timer whiteTime={time.white} blackTime={time.black} timerState={timerState} playerTurn={playerTurn}/>
+                        <Timer whiteTime={time.white} blackTime={time.black} playerTurn={playerTurn}/>
                     </div>
 
                     <div className="game-control-button-container">
-                        <ControlButtons socket={Socket}/>
+                        <ControlButtons />
                     </div>
                 </div>
 
@@ -46,7 +45,7 @@ const Screen = ({socket}) => {
 
                 <div className="board-contanier">
                     {/* <Board game={game} setGame={setGame}/> */}
-                    <Board socket={socket}/>
+                    <Board />
                 </div>
                 <MovesContainer moves={moves.black} pieces={pieces.black}/>
             </div>

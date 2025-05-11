@@ -1,7 +1,7 @@
 from chessArena.agents.pythonAgents.evaluations.piece_eval import PieceEvaluation
 from chessArena.agents.pythonAgents.searchTree.simpleTreeSearch import SimpleTreeSearch
 from chessArena.utils.agent_utils import get_legal_moves_for_turn
-
+from chessArena.agents.decorators.DelayAgent import DelayAgent
 
 class SimpleAgent:
     
@@ -14,6 +14,7 @@ class SimpleAgent:
         }
         self.search = SimpleTreeSearch(**self.search_params)
         
+    @DelayAgent()
     def make_move(self, board):
         legal_moves = list(get_legal_moves_for_turn(board))
                 

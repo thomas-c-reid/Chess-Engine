@@ -3,9 +3,10 @@ import { faSkull, faPause, faRotateRight, faCopy } from "@fortawesome/free-solid
 import useChesStore from "../store/chessStore";
 import { Chess } from "chess.js";
 
-export function ControlButtons({socket}) {
+export function ControlButtons({}) {
 
     const {setTime, setGame, setTimerState, gameFen} = useChesStore();
+    const socket = null;
 
     const resetGame = () => {
         console.log('RESETTING GAME')
